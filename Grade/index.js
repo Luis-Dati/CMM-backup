@@ -1,0 +1,129 @@
+import React, { useState, useEffect } from 'react'
+import { ScrollView, TouchableOpacity, ImageBackground, View, Text, ActivityIndicator } from 'react-native'
+import { SimpleGrid } from 'react-native-super-grid';
+import styles from './styles'
+import { GradeShow } from '../User/Model/Xbxh';
+
+import DATA_URL from '../url.js'
+
+const Sunday = ({ navigation, grade, classList, week }) => {
+	const [scoreList, setScoreList] = useState(null)
+	const [signal, setSignal] = useState(false)
+	var data2 = null;
+
+	const fetchScoreList = async () => {
+    try {
+      const response = await fetch(DATA_URL+'score/'+week);
+      const jsonData = await response.json();
+      setScoreList(jsonData);
+    } catch (error) {
+      
+    }
+  };
+
+  if (scoreList != null && classList != null) {
+ 		let dataTemp = JSON.parse(JSON.stringify(scoreList));
+
+ 		dataTemp.map((item)=>{
+ 			let scoreClass = classList.find((item2)=>item2.class_id == item.class_id)
+ 			item.class_id = scoreClass
+ 		})
+ 		data2 = dataTemp
+ 	}
+ 	
+  useEffect(() => {
+  	fetchScoreList()
+  }, [signal]);
+
+	return (
+		<View>
+			<GradeShow navigation={navigation} data2={data2} grade={grade.slice(5)} week={week} fnc={true}/>
+		</View>
+	)
+}
+
+const Grade = ({ navigation, route }) => {
+	const { grade } = route.params;
+	const [classList, setClassList] = useState([])
+	const [week, setWeek] = useState(null)
+
+	const fetchWeek = async () => {
+		const date = new Date()
+		try {
+			const response = await fetch(DATA_URL+'week');
+			const jsonData = await response.json();
+			const temp = jsonData.find(obj => date.toDateString() == add1days(new Date(obj.end_date)).toDateString())
+			if (!temp) {
+				temp = jsonData.find(obj => date.toDateString() == new Date(obj.end_date).toDateString())				
+			}
+			if (temp) {
+				setWeek(temp.week_id)
+			}
+			
+		} catch (error) {
+			
+		}
+	};	
+
+  const fetchClassList = async () => {
+    try {
+      const response = await fetch(DATA_URL+'class');
+      const jsonData = await response.json();
+      setClassList(jsonData);
+    } catch (error) {
+      
+    }
+  };
+
+	useEffect(() => {
+		fetchClassList()
+		fetchWeek()
+	}, [])
+
+	const onPress = (classId, className) => {
+		navigation.push("Main",{classId:classId,className:className})
+	}
+
+	function add1days(item) {
+		return new Date(item.getTime() + 24 * 60 * 60 * 1000);
+	}
+
+	return (
+		<ScrollView style={styles.image}>
+			{classList.length != 0
+			?	(
+					<>
+						{week
+						?	(
+								<Sunday navigation={navigation} grade={grade} classList={classList} week={week} onPress={onPress}/>
+							)
+						:	(									
+								<View>
+									<Text style={styles.mainText}>Chọn lớp của bạn</Text>			
+									<SimpleGrid
+									  itemDimension={130}
+									  data={classList.filter(obj=>obj.class_id.includes(grade.slice(5)))}
+									  style={styles.gridView}
+									  spacing={15}
+									  renderItem={({ item }) => (
+										<TouchableOpacity onPress={()=>onPress(item.class_id, item.class_name)} style={[styles.itemContainer, { backgroundColor: 'lightblue' }]}>
+										  <Text style={styles.itemName}>{item.class_name}</Text> 
+										</TouchableOpacity>
+									  )}
+									/>
+									<View style={{flex:0.1}}></View>
+								</View>
+							)
+						}
+					</>
+				)
+			: (
+					<ActivityIndicator size='large' />
+				)
+			}
+			
+		</ScrollView>
+	)
+}
+
+export default Grade

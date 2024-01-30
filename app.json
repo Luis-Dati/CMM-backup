@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "CMM",
+    "slug": "Ms2-app",
+    "version": "1.4.3",
+    "orientation": "portrait",
+    "icon": "./assets/OfficalLogo2.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash2.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "usesIcloudStorage": true,
+      "bundleIdentifier": "com.yourname.yourapp"
+    },
+    "plugins": [
+      "expo-document-picker"
+    ],
+    "android": {
+      "versionCode": 10,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/OfficalLogo2.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "package": "com.yourname.yourapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "39f6c12d-b5f8-45f5-889d-a81d4da7218d"
+      }
+    }
+  }
+}
