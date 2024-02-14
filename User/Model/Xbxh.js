@@ -800,8 +800,8 @@ const Xbxh = ({ week, weekin4, login }) => {
 
 			</View>
 			
-			<View style={{display: login.includes('sdl') ? 'flex' : 'none',position:'absolute',bottom:50,left:0,borderRadius:10}}>
-				<Button title='Lưu thành file excel' color='green' onPress={()=>{
+			<View style={{display: login.includes('sdl') ? 'flex' : 'none',position:'absolute',bottom:50,left:5,borderRadius:10}}>
+				<Button title={`Lưu thành\nfile excel`} color='green' onPress={()=>{
 					Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
 						{text:'Chắc',onPress:writeWorkbook},
 						{text:'Hủy bỏ',style:'cancel'}
