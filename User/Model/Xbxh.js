@@ -337,6 +337,10 @@ const Xbxh = ({ week, weekin4, login }) => {
 			  
 			}
 
+			if (login != 'admin') {
+				temp = [ temp.find((item) => login.includes((item.class.slice(3)))) ]
+			}
+
 	 		result = temp.map(item => { //Lặp qua từng lớp
 	 			let tmpVpmRule = data3.filter((item2)=>item2.class_id == item.class) //Lọc ra vi phạm từng lớp và xử lí
 	 			item.PlusĐT = 0 
@@ -382,15 +386,14 @@ const Xbxh = ({ week, weekin4, login }) => {
 	 			item.note = '';
 	 			if (item.supernote) {
 		 			s = Object.entries(item.supernote) 
-		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } (${ (itm[1].lst ? itm[1].lst : '') })\n`) 
+		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } ${ (itm[1].lst ? '('+itm[1].lst+')' : '') }\n`) 
 		 		}
 	
 	 			return ([
 	 				FontStyle(item.class.slice(3)),
 	 				FontStyle(item.SĐB),
 	 				FontStyle(item.SoTiet),
-	 				FontStyle(item.MinusPnt),
-	 				FontStyle(item.MinusĐT),
+	 				FontStyle(item.MinusPnt + item.MinusĐT),
 	 				FontStyle(item.PlusĐT),
 	 				FontStyle(item.score),
 	 				FontStyle(item.rank),
@@ -498,7 +501,7 @@ const Xbxh = ({ week, weekin4, login }) => {
 	  const worksheet = XLSX.utils.aoa_to_sheet([[MainRow[0]],[MainRow[1]]])
 	  const workbook = XLSX.utils.book_new();
 
-	  const header = ["KHỐI", "LỚP", `ĐIỂM\nSĐB`, 'SỐ TIẾT', `ĐIỂM\nTRỪ SĐ`, `ĐIỂM\nTRỪ ĐT`, 'ĐIỂM\nCỘNG ĐT' ,"TỔNG ĐIỂM", "XẾP HẠNG", "GHI CHÚ"]
+	  const header = ["KHỐI", "LỚP", `ĐIỂM\nSĐB`, 'SỐ TIẾT', `ĐIỂM\nTRỪ`, 'ĐIỂM\nCỘNG' ,"TỔNG ĐIỂM", "XẾP HẠNG", "GHI CHÚ"]
 		const headerRow1 = header.map(headers => ({
 		  t: 's',
 		  v: headers,
@@ -546,13 +549,13 @@ const Xbxh = ({ week, weekin4, login }) => {
 	  worksheet["!cols"] = []
 
 	  header.forEach((obj, idx)=>{
-	  	worksheet["!cols"].push({ wch: header[idx].length*2 });
+	  	worksheet["!cols"].push({ wch: header[idx].length*1.8 });
 	  })
 
 	  worksheet["!cols"][0].wch = header[0].length*3
 	  worksheet["!cols"][1].wch = header[1].length*3
 
-		worksheet["!cols"][9].wpx = 760
+		worksheet["!cols"][8].wpx = 760
 	  
 	  worksheet["!rows"] = [];
 
@@ -567,9 +570,15 @@ const Xbxh = ({ week, weekin4, login }) => {
 		if (k11 > 0) {merge.push({ s: { r: 3 + k10, c: 0 }, e: { r: 3 + k11 + k10 - 1, c: 0 } })}
     if (k12 > 0) {merge.push({ s: { r: 3 + k11 + k10, c: 0 }, e: { r: 3 + k11 + k10 + k12 - 1, c: 0 } })}
 		
-    for (i = 3 ; i <= 3 + k11 + k10 + k12 - 1; i++) {
-    	worksheet["!rows"][i] = {hpx: 20 * data[i-3][9]}
+    if (login == 'admin') {
+    	for (let i = 3; i <= 3 + k11 + k10 + k12 - 1; i++) {
+	    	worksheet["!rows"][i] = {hpx: 20 * data[i-3][8]}
+	    }	
+    } else {
+    	worksheet["!rows"][3] = {hpx: 20 * data[0][8]}
     }
+
+    
 
 		worksheet["!merges"] = merge;
 
@@ -768,7 +777,7 @@ const Xbxh = ({ week, weekin4, login }) => {
 		
 			<View style={{display:login == 'admin' ? 'flex' : 'none',position:'absolute',bottom:50,left:0,borderRadius:10}}>
 				<View style={{display:view}}>
-					<Button title='Thiết lập mới' color='gray' onPress={()=>{setModal(true);setIniScore({})}} ><Text>Hello</Text></Button>
+					<Button title='Thiết lập mới' color='gray' onPress={()=>{setModal(true);setIniScore({})}} />
 					<Divider bold={true}/>
 					<Button title='Lưu thành file excel' color='gray' onPress={()=>{
 						Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
@@ -788,24 +797,18 @@ const Xbxh = ({ week, weekin4, login }) => {
         <TouchableOpacity onDismiss={()=>setView('none')} onPress={()=>{setVisible(true); setView(view == 'flex' ? 'none' : 'flex')}}>
 					<MaterialCommunityIcons name='dots-horizontal-circle' color='green' size={50} />
 				</TouchableOpacity>
-				
-				{/*<Menu
-          visible={visible}
-          onDismiss={()=>setVisible(false)}
-          anchor={
-          	<TouchableOpacity onPress={()=>setVisible(true)}>
-							<MaterialCommunityIcons name='dots-vertical-circle' color='green' size={50} />
-						</TouchableOpacity>
-          }
-         >
-          <Menu.Item contentStyle={{}} onPress={() => {}} title="Thiết lập mới" />
-          <Divider bold={true}/>
-          <Menu.Item onPress={() => {}} title="Lưu thành file excel" />
-          <Divider bold={true}/>
-          <Menu.Item onPress={() => {}} title="Tính điểm thủ công" />
-        </Menu>*/}
+
 			</View>
-				
+			
+			<View style={{display: login.includes('sdl') ? 'flex' : 'none',position:'absolute',bottom:50,left:0,borderRadius:10}}>
+				<Button title='Lưu thành file excel' color='green' onPress={()=>{
+					Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
+						{text:'Chắc',onPress:writeWorkbook},
+						{text:'Hủy bỏ',style:'cancel'}
+					],{cancelable:false})
+				}} />
+			</View>
+
 		</View>
 		<Snackbar
       visible={snackView}
