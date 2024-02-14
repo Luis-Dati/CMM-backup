@@ -399,15 +399,13 @@ const User = ({route, navigation}) => {
 						<Fnction text='Danh sách lớp học' iconImg={require('../assets/add-member.png')} type='TTV'/>
 						<Fnction text='Sắp xếp lịch trực' iconImg={require('../assets/change.png')} type='SXLT'/>
 						<Fnction text='Quản lí lịch tuần' iconImg={require('../assets/calendar.png')} />
-						<Model />
-						<ModelWeek />
-						<Fnction text='Xem bảng xếp hạng' iconImg={require('../assets/result.png')} type='Xephang'/>
 					</View>
 				)
-			
 			}
+			<Model />
+			<ModelWeek />
 			<ModelXepHang />
-			
+			<Fnction text='Xem bảng xếp hạng' iconImg={require('../assets/result.png')} type='Xephang'/>
 			</ScrollView>
 			{/*<View style={{height:70}}></View>*/}
 		</SafeAreaView>

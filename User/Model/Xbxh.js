@@ -7,7 +7,8 @@ import SwitchSelector from "react-native-switch-selector";
 import { useNavigation } from '@react-navigation/native';
 import NumericInput from 'react-native-numeric-input';
 import { RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
-import XLSX from 'xlsx';
+// import XLSX from 'xlsx';
+import XLSX from 'xlsx-js-style'
 import { documentDirectory, writeAsStringAsync, readAsStringAsync } from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
@@ -192,7 +193,6 @@ const Xbxh = ({ week, weekin4, login }) => {
 
  		})
  		data2 = dataTemp
-
  	}
 
  	if (ruleList != null && vpmList != null) {
@@ -267,6 +267,37 @@ const Xbxh = ({ week, weekin4, login }) => {
 
  	// calculate data for xlsx
  	let longestNote = 0;
+
+	const FontStyle = (char) => ({
+	  t: 's',
+	  v: char,
+	  s: {
+	    font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "000000" } },
+	    alignment: { wrapText: true, vertical: 'center', horizontal: 'center' },
+	    border: { 
+	    	top: { style: 'thin', color: 'black'},
+	    	bottom: { style: 'thin', color: 'black'},
+	    	left: { style: 'thin', color: 'black'},
+	    	right: { style: 'thin', color: 'black'}
+	    }
+	  }
+	})
+
+	const FontStyleNote = (char) => ({
+	  t: 's',
+	  v: char,
+	  s: {
+	    font: { name: "Times New Roman", sz: 13, color: { rgb: "000000" } },
+	    alignment: { wrapText: true, vertical: 'center' },
+	    border: { 
+	    	top: { style: 'thin', color: 'black'},
+	    	bottom: { style: 'thin', color: 'black'},
+	    	left: { style: 'thin', color: 'black'},
+	    	right: { style: 'thin', color: 'black'}
+	    }
+	  }
+	})
+
  	async function CalculateSomeData() {
  		SnackPopUp('Hãy chờ một chút trong khi hệ thống chuẩn bị dữ liệu')
  		let temp = [], result = [];
@@ -312,28 +343,32 @@ const Xbxh = ({ week, weekin4, login }) => {
 	 			item.MinusĐT = 0 
 	 			item.MinusPnt = 0 
 	 			item.SoTiet = 0 
-	 			item.SĐB = 0; 
-	 			item.note = '';
+	 			item.SĐB = 0
+	 			item.supernote = {};
 	 			
 	 			tmpVpmRule.map(obj => {
 	 				if (obj.bonus == null) {
 	 					item.MinusPnt = item.MinusPnt + obj.name_vp_id.minus_pnt * obj.quantity
-	 					item.note = item.note + `${obj.name_vp_id.name_vp}: ${obj.quantity} (${obj.name_student}) `
+	 					
+	 					if (item.supernote[obj.name_vp_id.name_vp]) {
+	 						item.supernote[obj.name_vp_id.name_vp].num += obj.quantity
+	 						item.supernote[obj.name_vp_id.name_vp].lst += `, ${obj.name_student}` 
+	 					} else {
+	 						item.supernote[obj.name_vp_id.name_vp] = {}
+	 						item.supernote[obj.name_vp_id.name_vp].num = obj.quantity
+	 						item.supernote[obj.name_vp_id.name_vp].lst = obj.name_student
+	 					}
+
 	 				} else {
 	 					// xử lí sđb và bonus
 	 					if (obj.bonus == 'Điểm sổ đầu bài') {
-	 						
+	 						item.SoTiet = obj.quantity;
 	 						item.SĐB = obj.name_student.reduce((sum, object) => {
-	 							if (object.Tiet1 != '0') { item.SoTiet += 1}
-								if (object.Tiet2 != '0') { item.SoTiet += 1}
-								if (object.Tiet3 != '0') { item.SoTiet += 1}
-								if (object.Tiet4 != '0') { item.SoTiet += 1}
-								if (object.Tiet5 != '0') { item.SoTiet += 1}
 	  						return sum + Number(object.Tiet1) + Number(object.Tiet2) + Number(object.Tiet3) + Number(object.Tiet4) + Number(object.Tiet5)
 	  					},0);
 
 	 					} else {
-	 						item.note = item.note + obj.bonus +', '			
+	 						item.supernote[obj.bonus]	= 0		
 	 						if (obj.quantity < 0 ) {
 	 							item.MinusĐT += obj.quantity
 	 						} else {
@@ -344,21 +379,24 @@ const Xbxh = ({ week, weekin4, login }) => {
 
 	 			})
 
-	 			if (item.note.length > longestNote) {
-	 				longestNote = item.note.length
-	 			}
-
-	 			return ({
-	 				class : item.class.slice(3),
-	 				SĐB : item.SĐB,
-	 				SoTiet : item.SoTiet,
-	 				MinusPnt : item.MinusPnt,
-	 				MinusĐT : item.MinusĐT,
-	 				PlusĐT : item.PlusĐT,
-	 				score : item.score,
-	 				rank : item.rank,
-	 				note : item.note, 
-	 			})				
+	 			item.note = '';
+	 			if (item.supernote) {
+		 			s = Object.entries(item.supernote) 
+		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } (${ (itm[1].lst ? itm[1].lst : '') })\n`) 
+		 		}
+	
+	 			return ([
+	 				FontStyle(item.class.slice(3)),
+	 				FontStyle(item.SĐB),
+	 				FontStyle(item.SoTiet),
+	 				FontStyle(item.MinusPnt),
+	 				FontStyle(item.MinusĐT),
+	 				FontStyle(item.PlusĐT),
+	 				FontStyle(item.score),
+	 				FontStyle(item.rank),
+	 				FontStyleNote(item.note.slice(0, item.note.length-1)), 
+	 				(item.supernote ? s.length : 1)
+	 			])		
 	 		})
 
 	 	}
@@ -442,60 +480,83 @@ const Xbxh = ({ week, weekin4, login }) => {
 		let data = await CalculateSomeData()._z
 		
 	  /* generate worksheet and workbook */
-	  const worksheet = XLSX.utils.aoa_to_sheet([['KẾT QUẢ THI ĐUA TUẦN '+week.slice(2)],['Tuần:'+week.slice(2)+' (từ '+FormatDate(minus1days(weekin4.start_date))+' đến '+FormatDate(minus1days(weekin4.end_date))]]);
+		let MainRow = [
+			{ v: 'KẾT QUẢ THI ĐUA TUẦN ' + week.slice(2), t: "s", 
+				s: { 
+					font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "FF0000" } },
+					alignment: { wrapText: true, vertical: 'center', horizontal: 'center'} 
+				} 
+			},
+			{ v: 'Tuần: '+week.slice(2)+' (từ '+FormatDate(minus1days(weekin4.start_date))+' đến '+FormatDate(minus1days(weekin4.end_date))+')', t: "s", 
+				s: { 
+					font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "0070c0" } },
+					alignment: { wrapText: true, vertical: 'center', horizontal: 'center'} 
+				}
+			}
+		];	
+
+	  const worksheet = XLSX.utils.aoa_to_sheet([[MainRow[0]],[MainRow[1]]])
 	  const workbook = XLSX.utils.book_new();
 
-	  const header = ["Khối", "Lớp", `Điểm \n SĐB`, 'Sô tiết', `Điểm \ntrừ SĐ`, `Điểm ${'\n'} trừ ĐT`, 'Điểm\n cộng ĐT' ,"Tổng điểm", "Xếp hạng", "Ghi chú"]
+	  const header = ["KHỐI", "LỚP", `ĐIỂM\nSĐB`, 'SỐ TIẾT', `ĐIỂM\nTRỪ SĐ`, `ĐIỂM\nTRỪ ĐT`, 'ĐIỂM\nCỘNG ĐT' ,"TỔNG ĐIỂM", "XẾP HẠNG", "GHI CHÚ"]
 		const headerRow1 = header.map(headers => ({
 		  t: 's',
 		  v: headers,
 		  s: {
-		    font: { bold: true },
-		    alignment: { wrapText: true, vertical: 'center', horizontal: 'center' }
-		  }
+		    font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "FF0000" } },
+		    alignment: { wrapText: true, vertical: 'center', horizontal: 'center' },
+		    fill: { fgColor: { rgb: "ffff00" } },
+		    border: { 
+		    	top: { style: 'thin', color: 'black'},
+		    	bottom: { style: 'thin', color: 'black'},
+		    	left: { style: 'thin', color: 'black'},
+		    	right: { style: 'thin', color: 'black'}
+		    }
+		 	}
 		}));
 
 	  // /* fix headers */
 	  let k10 = 0, k11 = 0, k12 = 0;
 	  let grade10 = 'Khối 10', grade11 = 'Khối 11', grade12 = 'Khối 12'
 	  let gradeLst = []
-	  data.map((obj) => {
-	  	if (obj.class.includes('10')) {
-	  		gradeLst.push([grade10])
+	  
+	  classList.map((obj) => {
+	  	if (obj.class_id.includes('10')) {
+	  		gradeLst.push([FontStyle(grade10)])
 	  		grade10 = null
 	  		k10 += 1
 	  	} else {
-	  		if (obj.class.includes('11')) {
-	  			gradeLst.push([grade11])
+	  		if (obj.class_id.includes('11')) {
+	  			gradeLst.push([FontStyle(grade11)])
 	  			grade11 = null
 	  			k11 += 1
 	  		} else {
-	  			gradeLst.push([grade12])
+	  			gradeLst.push([FontStyle(grade12)])
 	  			grade12 = null
 	  			k12 += 1
 	  		}
 	  	} 
 	  })
-	  
+
 		XLSX.utils.sheet_add_aoa(worksheet, [headerRow1], { origin: "A3" });
 		XLSX.utils.sheet_add_aoa(worksheet, gradeLst, { origin: "A4" });
 	  /* calculate column width */
-	  XLSX.utils.sheet_add_json(worksheet, data, {origin: 'B4', skipHeader:true});
-	    
+	  XLSX.utils.sheet_add_aoa(worksheet, data, { origin: "B4" });
+
 	  worksheet["!cols"] = []
+
 	  header.forEach((obj, idx)=>{
-	  	worksheet["!cols"].push({ wch: header[idx].length });
+	  	worksheet["!cols"].push({ wch: header[idx].length*2 });
 	  })
 
-	  worksheet["!cols"][0].wch = header[0].length*1.5
-	  worksheet["!cols"][1].wch = header[1].length*1.5
-		worksheet["!cols"][9].wch = longestNote
+	  worksheet["!cols"][0].wch = header[0].length*3
+	  worksheet["!cols"][1].wch = header[1].length*3
+
+		worksheet["!cols"][9].wpx = 760
 	  
-	  if(!worksheet["!rows"]) {worksheet["!rows"] = []};
+	  worksheet["!rows"] = [];
 
-		if(!worksheet["!rows"][2]) {worksheet["!rows"][2] = {hpx: 32}};
-
-		worksheet["!rows"][2].hpx = 32;
+		worksheet["!rows"][2] = {hpx: 40};
 
 	  let merge = [
 			{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
@@ -506,6 +567,10 @@ const Xbxh = ({ week, weekin4, login }) => {
 		if (k11 > 0) {merge.push({ s: { r: 3 + k10, c: 0 }, e: { r: 3 + k11 + k10 - 1, c: 0 } })}
     if (k12 > 0) {merge.push({ s: { r: 3 + k11 + k10, c: 0 }, e: { r: 3 + k11 + k10 + k12 - 1, c: 0 } })}
 		
+    for (i = 3 ; i <= 3 + k11 + k10 + k12 - 1; i++) {
+    	worksheet["!rows"][i] = {hpx: 20 * data[i-3][9]}
+    }
+
 		worksheet["!merges"] = merge;
 
 		XLSX.utils.book_append_sheet(workbook, worksheet, "Kết quả");
