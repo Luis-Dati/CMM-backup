@@ -24,6 +24,7 @@ const Form = (props) => {
 
 	const [selectedDay, setSelectedDay] = useState({id:new Date().getDay(), item:'Thứ '+(new Date().getDay()+1)})
 	const days = [
+		{id:0,item:'Chủ nhật'},
 		{id:1,item:'Thứ 2'},
 		{id:2,item:'Thứ 3'},
 		{id:3,item:'Thứ 4'},
@@ -419,7 +420,7 @@ const Form = (props) => {
 						        maxHeight={150}
 						        labelField="item"
 						        valueField="id"
-						        placeholder={props.changeDay ? props.changeDay.item : days[0].item}
+						        placeholder={props.changeDay ? props.changeDay.item : days[new Date().getDay()].item}
 						        value={props.changeDay}
 						        onChange={item => props.setChangeDay(item)}
 						        itemContainerStyle={{borderWidth:0.5}}
@@ -450,7 +451,16 @@ const Form = (props) => {
 									<Text style={styles.labelinput}>Nhập số học sinh vi phạm</Text>
 									<NumericInput  
 										value={props.changeNum}
-										onChange={value => props.setChangeNum(value)} 
+										onChange={value => {
+											if (value < props.changeNum) {
+												let clone = JSON.parse(JSON.stringify(props.changeLst));	
+												delete clone[String(value)]	
+												props.setChangeLst(clone)
+												console.log(props.changeLst)
+											}
+											props.setChangeNum(value)
+
+										}} 
 										rounded
 									/>
 								</View>	

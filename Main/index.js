@@ -278,7 +278,7 @@ const Main = ({route, navigation}) => {
 											</TouchableOpacity>	
 										)
 									}
-									<Text>Ngày tạo: {FormatTime(item?.create_at)}, bởi: {item.create_by}</Text>												
+									<Text>Ngày tạo: {FormatTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
 								</View>
 							)
 						:	(
