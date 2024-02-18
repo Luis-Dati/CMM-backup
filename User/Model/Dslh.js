@@ -20,6 +20,8 @@ function DecryptPass (code, key) {
 	return bytes.toString(CryptoES.enc.Utf8);
 }
 
+
+
 const ShowClass = ({ data2, setSignal, right, view}) => {
   async function handleDel(item) {
   	const response4 = await fetch(DATA_URL+'score/'+item.user_class.class_id, {
@@ -59,7 +61,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 
 	  if (response1.status === 200 && response2.status === 200) {
 	    Alert.alert('Thông báo', 'Xóa thành công',[
-    		{text:'OK',onPress:()=>{setSignal('sended3')}}
+    		{text:'OK',onPress:()=>{setSignal(item)}}
     	])
 	  } else {
 	    Alert.alert('Error fetching data');
@@ -148,7 +150,8 @@ const Dslh = ({ level }) => {
 	const [totalView, setTotalView] = useState('none')
 	const [right, setRight] = useState(0)
 	const [newOne, setNewOne] = useState('')
-	
+	const [numWeek, setNumWeek] = useState(0)
+
 	const [k10, setk10] = useState(0)
 	const [k11, setk11] = useState(0)
 	const [k12, setk12] = useState(0)
@@ -192,6 +195,16 @@ const Dslh = ({ level }) => {
     }
   };
 
+  const fetchNumWeek = async () => {
+    try {
+      const response = await fetch(DATA_URL+'week');
+      const jsonData = await response.json();
+      setNumWeek(jsonData.length);
+    } catch (error) {
+      
+    }
+  };
+
   const CreateData = async () => {
    	await fetchUserList();
    	await fetchClassList();
@@ -206,6 +219,10 @@ const Dslh = ({ level }) => {
  		})
  		data2 = dataTemp
  	}
+
+ 	useEffect(() => {
+ 		fetchNumWeek()
+ 	}, [])
 
   useEffect(() => {
   	CreateData()
@@ -261,7 +278,7 @@ const Dslh = ({ level }) => {
 		let newListUser = Array(...makeUser(list10),...makeUser(list11),...makeUser(list12));
 		let newListClass = Array(...makeClass(list10),...makeClass(list11),...makeClass(list12));
 
-		let lst = Array.from({ length: 5 }, (_, i) => ("00" +  (i + 1)).slice(-2));
+		let lst = Array.from({ length: numWeek }, (_, i) => ("00" +  (i + 1)).slice(-2));
 		newList.forEach(async (data, index)=>{
 				await SendClass(newListClass[index])
 				await SendUser(newListUser[index])
@@ -401,7 +418,7 @@ const Dslh = ({ level }) => {
 			const response3 = await createLt()
 
 			async function createLt () {
-			  let lst = Array.from({ length: 5 }, (_, i) => ("00" +  (i + 1)).slice(-2));
+			  let lst = Array.from({ length: numWeek }, (_, i) => ("00" +  (i + 1)).slice(-2));
 			  
 			  await lst.forEach(async (item, idx)=>{
 			  	const response3 = await fetch(DATA_URL+'lichtruc', {
@@ -438,7 +455,7 @@ const Dslh = ({ level }) => {
 	return (		
 		<View style={styles.container}>
 			<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',marginBottom:10}}>
-				<Button disabled={data2.length == 0 ? false : true} title='Tạo mới' color='green' onPress={()=>{
+				<Button title='Tạo mới' color='green' onPress={()=>{
 						setModal(true);
 						setTool(true)
 						setLst12({});setLst10({});setLst11({})
