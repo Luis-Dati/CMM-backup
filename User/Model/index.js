@@ -15,7 +15,8 @@ const Model = ({route, navigation}) => {
 	const { login } = route.params;
 	const { week } = route.params;
 	const { classe } = route.params;
-	const { weekin4 } = route.params
+	const { weekin4 } = route.params;
+	const { loginIn4 } = route.params;
 
 	const Comparision = () => {
 		switch (type) {
@@ -23,7 +24,7 @@ const Model = ({route, navigation}) => {
 			return ( <Dslh level={level}/> )
 			break;
 		case 'Xem bảng xếp hạng':
-			return ( <Xbxh level={level} week={week} weekin4={weekin4} login={login} /> )
+			return ( <Xbxh level={level} week={week} weekin4={weekin4} login={login} loginIn4={loginIn4}/> )
 			break;
 		case 'Sổ tay vi phạm': 
 			return ( <Stvp level={level} classe={classe} login={login} week={week}/>)

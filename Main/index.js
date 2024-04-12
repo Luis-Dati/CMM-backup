@@ -198,7 +198,7 @@ const Main = ({route, navigation}) => {
 														</TouchableOpacity>	
 													)
 												}
-												<Text>Ngày tạo: {FormatTime(item?.create_at)}, bởi: {item.create_by}</Text>												
+												<Text>Ngày tạo: {FormatTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
 											</View>
 										)
 									:	(
@@ -207,7 +207,7 @@ const Main = ({route, navigation}) => {
 													<Text style={{fontSize:16}}>{item.name_vp_id?.name_vp}</Text>
 													<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
 												</View>
-												<Text>Ngày tạo: {FormatTime(item?.create_at)}, bởi: {item.create_by == 'admin' ? 'admin' : 'Sao đỏ '+item.create_by.slice(3)}</Text>
+												<Text>Ngày tạo: {FormatTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>
 												<Text>Danh sách hs vi phạm: {item.name_student}</Text>	
 											</View>				
 										)

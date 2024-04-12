@@ -95,8 +95,8 @@ const UserScreen = ({ navigation }) => {
 const Empty = () => {
 	return (
 		<View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-			<Text>Phiên bản: 1.5.2</Text>
-			<Text>Bản quyền thuộc sở hữu của Lê Duy Đạt (820615)</Text>
+			<Text>Phiên bản: 1.5.3</Text>
+			<Text>Bản quyền thuộc sở hữu của Lê Duy Đạt (313615)</Text>
 		</View>
 	)
 }

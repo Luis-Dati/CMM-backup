@@ -44,14 +44,13 @@ const Loading = ({navigation}) => {
 				setUserIn4(jsonValue)
 				setName(jsonValue.user_role)
 				setSchool({id:jsonValue2,item:jsonValue2})
-				if (jsonValue.user_role == 'admin') {
-					setRole('Admin')
-				}
+				
 				if (jsonValue.user_role.includes('sdl')) {
 					setRole('Sao đỏ')
+				} else {
+					setRole('Admin')
 				}
-			} else {
-				await fetchData()
+
 			}
 		} catch (e) {
 			// error reading value
@@ -62,6 +61,7 @@ const Loading = ({navigation}) => {
 
 	useEffect(() => {
 		getItems()
+		fetchData()
 	},[])
 
 	const storeData = async (value) => {
@@ -167,19 +167,12 @@ const Loading = ({navigation}) => {
 					Alert.alert('Thông báo','Bạn chưa nhập đầy đủ thông tin')
 					return
 				}
-
-				if (userIn4) {
-					if (pass == userIn4.password) {
-						user = userIn4
-					}
-				}	else {
-					user = data.find((item)=>(item.user_role == name && item.password == pass)) 
-				}
-
+				console.log(data)
+				user = data.find((item)=>(item.user_role == name && item.password == pass)) 
+				
 				if (user) {
-					if (userIn4 == null) {
-						await storeData(user)	
-					}
+					await storeData(user)	
+					
 					Alert.alert('Thông báo','Đăng nhập thành công')
 					navigation.replace('TotalScreen', {
 						screen:'HomeScreen',

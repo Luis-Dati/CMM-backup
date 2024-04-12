@@ -120,7 +120,7 @@ const Form = (props) => {
 
 	return (
 		<View style={{backgroundColor:'transparent',borderRadius:10}}>
-			<View style={{position:'absolute',bottom:5,left:0,flexDirection:'row',alignItems:'center'}}>
+			<View style={{position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center'}}>
 				<View style={{flexDirection:'row', alignItems:'center'}}>
 					<TouchableOpacity onPress={() => {setMv(true);props.setFnc('none')}}>
 						<MaterialCommunityIcons name='plus-circle' size={55} color='blue' />	

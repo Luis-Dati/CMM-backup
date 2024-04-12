@@ -51,9 +51,6 @@ export default function DrawerContent(props) {
   };
 
 	const isDrawer = useDrawerStatus();
-	// if (isDrawer == 'open') {
-	// 	getItems()
-	// }
 
   const clearAll = async () => {
 	  try {
@@ -130,11 +127,11 @@ export default function DrawerContent(props) {
 		  					>
 		  						<Pressable 
 		  							style={styles.imgBox} 
-		  							onPress={()=>navigation.navigate('UserScreen',{screen:'User',params:{login:login}})}
+		  							onPress={()=>navigation.navigate('UserScreen',{screen:'User',params:{login:login,loginIn4:userIn4}})}
 		  						>
 		  							<MaterialCommunityIcons name='account' size={40} color='white'/>
 		  						</Pressable>
-		  						<Text style={styles.usrTxt}>{login != 'admin' ? 'Sao đỏ '+login.slice(3) : login}</Text>
+		  						<Text style={styles.usrTxt}>{login.includes('sdl') ? 'Sao đỏ '+login.slice(3) : login}</Text>
 		  						<View style={{height:10}} />
 		  						<Button title='Đổi mật khẩu' onPress={()=>{setModal(true);setOldPass('');setNewPass('');setNewPassAg('')}} color='#27A027'/>
 		  						<Modal

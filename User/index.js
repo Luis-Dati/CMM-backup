@@ -10,6 +10,7 @@ import DATA_URL from '../url.js'
 
 const User = ({route, navigation}) => {
 	const { login } = route.params;
+	const { loginIn4 } = route.params;
 
 	const [typefnc, setTypefnc] = useState(null);
 	const [modal, setMv] = useState(false)
@@ -93,7 +94,7 @@ const User = ({route, navigation}) => {
 		const onPress = () => {
 			setTypefnc(text);
 
-			if (text=='Sổ tay vi phạm' && login=='admin') {
+			if (text=='Sổ tay vi phạm' && !login.includes('sdl')) {
 				setMv(true)
 				return
 			}; 
@@ -268,7 +269,7 @@ const User = ({route, navigation}) => {
 						        renderItem={({item, index}) => 
 						        	<Button color='blue' title={item.week_name} onPress={()=>{
 													setMwk(false);
-													navigation.navigate('Model',{login:login,type:typefnc,week:item.week_id,weekin4:item})
+													navigation.navigate('Model',{login:login,loginIn4:loginIn4,type:typefnc,week:item.week_id,weekin4:item})
 												}}
 											/>
 										}
@@ -366,7 +367,7 @@ const User = ({route, navigation}) => {
 		<SafeAreaView style={styles.container}>
 			<View style={styles.userbox}>
 				<View style={styles.icon}>
-				{login == 'admin'
+				{!login.includes('sdl')
 				? (
 						<Image 
 							source={require('../assets/adminIcon.png')} 
@@ -384,7 +385,7 @@ const User = ({route, navigation}) => {
 				</View>
 				<View style={styles.greeting}>
 					<Text style={styles.grtText}>Chào mừng bạn đã quay trở lại!</Text>
-					<Text style={styles.grtText}>Chức vụ: {login != 'admin' ? 'Sao đỏ '+login.slice(3) : login}</Text>
+					<Text style={styles.grtText}>Chức vụ: {login.includes('sdl') ? 'Sao đỏ '+login.slice(3) : login}</Text>
 				</View>
 			</View>
 			<ScrollView 

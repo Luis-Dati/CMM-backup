@@ -13,7 +13,7 @@ import DATA_URL from '../../url.js'
 let deviceWidth = Dimensions.get('window').width
 
 const Stvp = ({ classe, login, week }) => {
-
+console.log(classe)
 	const [vpmList, setVpmList] = useState(null);
 	const [ruleList, setRuleList] = useState(null);
 	const [signal, setSignal] = useState(false)
@@ -28,7 +28,9 @@ const Stvp = ({ classe, login, week }) => {
 	const [changeDay, setChangeDay] = useState(null)
 	const [changeLst, setChangeLst] = useState([])
 	const [rtData, setRtData] = useState(null)
-	const [selectedDay, setSelectedDay] = useState({id:0,item:'Tất cả'},)
+	const [selectedDay, setSelectedDay] = useState({id:0,item:'Tất cả'})
+	const [selectType, setSelectType] = useState({id:'D',item:'Chi tiết'})
+	const [noteList, setNoteList] = useState(null)
 	const days = [
 		{id:0,item:'Tất cả'},
 		{id:1,item:'Thứ 2'},
@@ -37,6 +39,10 @@ const Stvp = ({ classe, login, week }) => {
 		{id:4,item:'Thứ 5'},
 		{id:5,item:'Thứ 6'},
 		{id:6,item:'Thứ 7'},
+	]
+	const type = [
+		{id:'D',item:'Chi tiết'},
+		{id:'S',item:'Ngắn gọn'}
 	]
 	var data2 = null
 
@@ -76,6 +82,17 @@ const Stvp = ({ classe, login, week }) => {
     }
   };
 
+  const fetchNoteList = async () => {
+    try {
+      const response = await fetch(DATA_URL+'score/'+week);
+      let jsonData = await response.json();
+      jsonData = jsonData.find(item=>item.class_id == 'cls'+classe)
+      setNoteList(jsonData);
+    } catch (error) {
+      
+    }
+  };
+
   function changeVpm(vpm, quantity, stumtk, mainData, day) {
   	let lstStu = {}
   	stumtk.split(', ').map((item,index) => lstStu[index]=item)
@@ -90,6 +107,7 @@ const Stvp = ({ classe, login, week }) => {
   async function CreateData () {
   	await fetchVpmList()
   	await fetchRuleList()
+  	await fetchNoteList()
   }
 
   if (ruleList != null && vpmList != null) {
@@ -235,107 +253,133 @@ const Stvp = ({ classe, login, week }) => {
 	        onChange={item => setSelectedDay(item)}
 	        itemContainerStyle={{borderWidth:0.5}}
 	      />	
+	      <Dropdown
+ 					autoScroll={false}
+	        style={[styles.dropdown]}
+	        iconStyle={{height:30,width:30}}
+	        iconColor='black'
+	        activeColor='lightblue'
+	        data={type}
+	        maxHeight={250}
+	        labelField="item"
+	        valueField="id"
+	        placeholder={type[0].item}
+	        value={selectType}
+	        onChange={item => setSelectType(item)}
+	        itemContainerStyle={{borderWidth:0.5}}
+	      />
  			</View>
  			
-			<FlatList
-				style={{
-					borderWidth:0.5,  	
-					shadowColor: '#000',
-			    shadowOffset: {
-			      width: 0,
-			      height: 1,
-			    },
-			    shadowOpacity: 0.2,
-			    shadowRadius: 1.41,
-			    elevation: 2,
-			  }}
-        data={ViphamDay()}
-        renderItem={({item, index}) => (	
-					<View style={{margin:5,flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-						{item.name_vp_id == null 
-						? (
-								<View style={{flex:1}}>
-									{item.bonus != 'Điểm sổ đầu bài'
-									? (												
-											<View style={styles.frame}>
-												<Text style={{fontSize:16, width:'65%'}}>{item.bonus}</Text>
-												<Text style={{fontSize:16}}>{item.quantity} điểm</Text>
-											</View>	
-										)
-									: (
-											<TouchableOpacity style={styles.frame}>
-												<Text style={{fontSize:16}}>{item.bonus}</Text>
-											</TouchableOpacity>	
-										)
-									}
-									<Text>Ngày tạo: {ConvertTime(item.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
-								</View>
-							)
-						:	(
-								<TouchableOpacity 
-									style={{flex:1}} 
-									onPress={()=>
-										{
-											if ((item.create_by == 'admin' || item.modified_by == 'admin') && login != 'admin') {
-												Alert.alert('Thông báo','Bạn không có quyền chỉnh sửa vi phạm này')
-											} else {
-												changeVpm(
-													{
-														id: item.name_vp_id?.name_vp_id, 
-														item: item.name_vp_id?.name_vp
-													}, 
-													item.quantity, 
-													item.name_student, 
-													{
-														vpm_id: item.vpm_id,
-														week_id: item.week_id,
-														class_id: item.class_id,
-														modified_by: login
-													},
-													{
-														id: item.day,
-														item: 'Thứ '+(item.day+1)	
-													}
+ 			{selectType.id == 'D'
+ 			? (
+					<FlatList
+						style={{
+							borderWidth:0.5,  	
+							shadowColor: '#000',
+					    shadowOffset: {
+					      width: 0,
+					      height: 1,
+					    },
+					    shadowOpacity: 0.2,
+					    shadowRadius: 1.41,
+					    elevation: 2,
+					  }}
+		        data={ViphamDay()}
+		        renderItem={({item, index}) => (	
+							<View style={{margin:5,flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+								{item.name_vp_id == null 
+								? (
+										<View style={{flex:1}}>
+											{item.bonus != 'Điểm sổ đầu bài'
+											? (												
+													<View style={styles.frame}>
+														<Text style={{fontSize:16, width:'65%'}}>{item.bonus}</Text>
+														<Text style={{fontSize:16}}>{item.quantity} điểm</Text>
+													</View>	
+												)
+											: (
+													<TouchableOpacity style={styles.frame}>
+														<Text style={{fontSize:16}}>{item.bonus}</Text>
+													</TouchableOpacity>	
 												)
 											}
-										}
-									}
-								>
-									<View style={styles.frame}>
-										<Text style={{fontSize:16,width:'65%'}}>{item.name_vp_id?.name_vp}</Text>
-										<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
-									</View>
-									<Text>Ngày tạo: {ConvertTime(item?.create_at)}, bởi: {item.create_by == 'admin' ? 'admin' : 'Sao đỏ ' +item.create_by.slice(3)}</Text>
-									{item.modified_by
-									&& (<Text>Được chỉnh sửa bởi: {item.modified_by}</Text>)
-									}
-									<Text>Danh sách hs vi phạm: {item.name_student}</Text>	
-								</TouchableOpacity>
-							)
-						}
+											<Text>Ngày tạo: {ConvertTime(item.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
+										</View>
+									)
+								:	(
+										<TouchableOpacity 
+											style={{flex:1}} 
+											onPress={()=>
+												{
+													if ((item.create_by == 'admin' || item.modified_by == 'admin') && login != 'admin') {
+														Alert.alert('Thông báo','Bạn không có quyền chỉnh sửa vi phạm này')
+													} else {
+														changeVpm(
+															{
+																id: item.name_vp_id?.name_vp_id, 
+																item: item.name_vp_id?.name_vp
+															}, 
+															item.quantity, 
+															item.name_student, 
+															{
+																vpm_id: item.vpm_id,
+																week_id: item.week_id,
+																class_id: item.class_id,
+																modified_by: login
+															},
+															{
+																id: item.day,
+																item: 'Thứ '+(item.day+1)	
+															}
+														)
+													}
+												}
+											}
+										>
+											<View style={styles.frame}>
+												<Text style={{fontSize:16,width:'65%'}}>{item.name_vp_id?.name_vp}</Text>
+												<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
+											</View>
+											<Text>Ngày tạo: {ConvertTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>
+											{item.modified_by
+											&& (<Text>Được chỉnh sửa bởi: {item.modified_by.includes('sdl') ? 'Sao đỏ '+item.modified_by.slice(3) : item.modified_by}</Text>)
+											}
+											<Text>Danh sách hs vi phạm: {item.name_student}</Text>	
+										</TouchableOpacity>
+									)
+								}
 
-						{item.bonus != 'Điểm sổ đầu bài'
-						&& (
-								<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox,{display:view}]}>
-									<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
-								</TouchableOpacity>	
-							 )
-						}
-					</View>								
-        )
+								{item.bonus != 'Điểm sổ đầu bài'
+								&& (
+										<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox,{display:view}]}>
+											<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
+										</TouchableOpacity>	
+									 )
+								}
+							</View>								
+		        )
 
-      	}
-        keyExtractor={(item, idx) => item.vpm_id}
-        ListFooterComponent={
-      		<View style={{height:60}} />  	
-        }
-        ListEmptyComponent={
-        	<View style={styles.itemBox}>
-						<Text>Chưa có vi phạm</Text>
-						<ActivityIndicator size="large" />
-					</View>	
-        }
-      />
+		      	}
+		        keyExtractor={(item, idx) => item.vpm_id}
+		        ListFooterComponent={
+		      		<View style={{height:60}} />  	
+		        }
+		        ListEmptyComponent={
+		        	<View style={styles.itemBox}>
+								<Text>Chưa có vi phạm</Text>
+								<ActivityIndicator size="large" />
+							</View>	
+		        }
+		      />
+ 				)
+ 			: (
+ 					<ScrollView style={{flex:1,backgroundColor:'white',borderRadius:30,padding:10,margin:10}}>
+ 						<Text style={{fontSize:20,fontWeight:'500'}}>{noteList?.note}</Text>
+ 						<View style={{height:50}} />
+ 					</ScrollView>
+ 				)
+ 			}
+
    		             		  
 		  <Form 
 		  	items={ConvertItem()} 

@@ -2,7 +2,7 @@
   "expo": {
     "name": "CMM",
     "slug": "Ms2-app",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "orientation": "portrait",
     "icon": "./assets/OfficalLogo2.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
       "expo-document-picker"
     ],
     "android": {
-      "versionCode": 11,
+      "versionCode": 12,
       "adaptiveIcon": {
         "foregroundImage": "./assets/OfficalLogo2.png",
         "backgroundColor": "#000000"
@@ -42,6 +42,12 @@
       "eas": {
         "projectId": "39f6c12d-b5f8-45f5-889d-a81d4da7218d"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/39f6c12d-b5f8-45f5-889d-a81d4da7218d"
     }
   }
 }

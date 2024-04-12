@@ -107,11 +107,11 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
-    width:100,
+    width:120,
   },
   filterBox:{
   	backgroundColor:'white', 
-  	width: 200,
+  	
   	marginHorizontal:10, 
   	flexDirection:'row', 
   	alignItems:'center', 

@@ -16,10 +16,11 @@ import * as Sharing from 'expo-sharing';
 import styles from './styles';
 import DATA_URL from '../../url.js'
 
-const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc }) => {
+const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc}) => {
 	const [, updateState] = React.useState();
 	const forceUpdate = React.useCallback(() => updateState({}), []);
-	
+	const [modal, setModal] = useState(false)
+	const [klass, setKlass] = useState(null)
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -29,7 +30,7 @@ const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc }) => {
       snackFnc('Đã làm mới xong')
     }, 2000);
   }, []);
-
+console.log(data2)
 	let lst = null
 	
 	const bMap = new Map();
@@ -70,42 +71,70 @@ const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc }) => {
 		// 		)
 		// 	}	
 		// </ScrollView>
-		<FlatList
-			refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-			ListHeaderComponent={
-				<View>
-					<Text style={styles.sectionHeader}>Tuần {week.slice(2)}</Text>
-					<View style={{flexDirection:'row'}}>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>Thứ hạng</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tên lớp</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Điểm số</Text>
+		<View>
+			<FlatList
+				refreshControl={
+	        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+	      }
+				ListHeaderComponent={
+					<View>
+						<Text style={styles.sectionHeader}>Tuần {week.slice(2)}</Text>
+						<View style={{flexDirection:'row'}}>
+							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>Thứ hạng</Text>
+							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tên lớp</Text>
+							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Điểm số</Text>
+						</View>
+					</View>
+				}
+	      data={lst}
+	      renderItem={({item, index}) => (
+	      	<TouchableOpacity style={{flexDirection:'row'}} onPress={fnc ? () => onPress(item.class_id?.class_id, item.class_id?.class_name) : ()=> {setModal(true);setKlass(item.class_id)}}>
+						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>{index+1}</Text>
+						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>{item.class_id?.class_name}</Text>
+						<Text style={[styles.gridTxt2,{flex:1}]}>{item.score}</Text>	
+					</TouchableOpacity>
+	      )}
+	      keyExtractor={(item, idx) => JSON.stringify(item.class_id)}
+	      // ListFooterComponent={
+	    	// 	<View style={{height:50}} />  	
+	      // }
+	      ListEmptyComponent={
+	      	<View style={{marginTop:30,justifyContent:'center',alignItems:'center'}}>
+		 				<ActivityIndicator size="large" />
+		 			</View>
+	      }
+	    />
+
+	    <Modal
+				animationType='fade'
+				transparent={true}
+				visible={modal}
+			>
+				<View style={[styles.entireView,{justifyContent:'center',alignItems:'center'}]}>
+					<View style={[{backgroundColor:'#FFF',width:'90%',height:430,paddingHorizontal:10,borderTopLeftRadius:20,borderTopRightRadius:20}]}>	
+						<TouchableOpacity 
+							onPress={()=>{setModal(false)}}
+							style={{alignSelf:'flex-end'}}
+						>
+							<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
+						</TouchableOpacity>
+						<View style={{backgroundColor:'#D0D0D0',marginBottom:10}}>
+							<Text style={styles.header}>Vi phạm của {klass?.class_name}</Text>
+						</View>
+						<ScrollView style={{padding:10}}>
+								<Text style={{fontSize:18,fontWeight:'500'}}>
+									{data2?.find(item=>item.class_id?.class_id == klass?.class_id)?.note}
+								</Text>								
+							<View style={{height:50}} />
+						</ScrollView>
 					</View>
 				</View>
-			}
-      data={lst}
-      renderItem={({item, index}) => (
-      	<TouchableOpacity style={{flexDirection:'row'}} onPress={fnc ? () => onPress(item.class_id?.class_id, item.class_id?.class_name) : ()=>{}}>
-					<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>{index+1}</Text>
-					<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>{item.class_id?.class_name}</Text>
-					<Text style={[styles.gridTxt2,{flex:1}]}>{item.score}</Text>	
-				</TouchableOpacity>
-      )}
-      keyExtractor={(item, idx) => JSON.stringify(item.class_id)}
-      // ListFooterComponent={
-    	// 	<View style={{height:50}} />  	
-      // }
-      ListEmptyComponent={
-      	<View style={{marginTop:30,justifyContent:'center',alignItems:'center'}}>
-	 				<ActivityIndicator size="large" />
-	 			</View>
-      }
-    />
+			</Modal>	
+    </View>
 	)
 }
 
-const Xbxh = ({ week, weekin4, login }) => {
+const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	const navigation = useNavigation();
 
 	const [choice, setChoice] = useState('all');
@@ -223,9 +252,24 @@ const Xbxh = ({ week, weekin4, login }) => {
 		setSignal('Complete! '+new Date().toString())
 
 		async function TinhDiem2(data) {
-		  if (scoreList != null && data != null) {
+			let KList;
+			switch (loginIn4.role) {
+			case 'admin10':
+				KList = scoreList.filter(item=>item.class_id.includes('10'));
+				break;
+			case 'admin11':
+				KList = scoreList.filter(item=>item.class_id.includes('11'))
+				break;
+			case 'admin12':
+				KList = scoreList.filter(item=>item.class_id.includes('12'))
+				break;
+			default:
+				KList = scoreList
+			}
+			
+		  if (KList != null && data != null) {
 		    try {
-		      for (const objScore of scoreList) {
+		      for (const objScore of KList) {
 		        let iniMinus = 0, cnt = 0, result = 0;
 
 		        for (const obj of data) {
@@ -263,6 +307,8 @@ const Xbxh = ({ week, weekin4, login }) => {
 		    body: JSON.stringify(param),
 		  });
 		}
+
+		await CalculateSomeData()
 	}
 
  	// calculate data for xlsx
@@ -302,9 +348,33 @@ const Xbxh = ({ week, weekin4, login }) => {
  		SnackPopUp('Hãy chờ một chút trong khi hệ thống chuẩn bị dữ liệu')
  		let temp = [], result = [];
 
- 		if (data2 != null && data3 != null) {
+		async function SendNote(param) {
+			const response = await fetch(DATA_URL+'scorenote', {
+		    method: 'PUT',
+		    headers: {
+		      'Content-Type': 'application/json',
+		    },
+		    body: JSON.stringify(param),
+		  });
+		}
 
-	 		const groupedByGrade = data2.reduce((groups, item) => {
+ 		if (data2 != null && data3 != null) {
+ 			let GList;
+ 			switch (loginIn4.role) {
+			case 'admin10':
+				GList = data2.filter(item=>item.class_id.class_id.includes('10'));
+				break;
+			case 'admin11':
+				GList = data2.filter(item=>item.class_id.class_id.includes('11'))
+				break;
+			case 'admin12':
+				GList = data2.filter(item=>item.class_id.class_id.includes('12'))
+				break;
+			default:
+				GList = data2
+			}
+
+	 		const groupedByGrade = GList.reduce((groups, item) => {
 			  const { week_id, class_id, ...rest } = item;
 			  const grade = class_id.class_id.slice(3, 5);
 
@@ -337,11 +407,13 @@ const Xbxh = ({ week, weekin4, login }) => {
 			  
 			}
 
-			if (login != 'admin') {
+			if (login.includes('sdl')) {
 				temp = [ temp.find((item) => login.includes((item.class.slice(3)))) ]
 			}
 
-	 		result = temp.map(item => { //Lặp qua từng lớp
+			let noteList = []
+
+	 		result = temp.map(async item => { //Lặp qua từng lớp
 	 			let tmpVpmRule = data3.filter((item2)=>item2.class_id == item.class) //Lọc ra vi phạm từng lớp và xử lí
 	 			item.PlusĐT = 0 
 	 			item.MinusĐT = 0 
@@ -388,7 +460,8 @@ const Xbxh = ({ week, weekin4, login }) => {
 		 			s = Object.entries(item.supernote) 
 		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } ${ (itm[1].lst ? '('+itm[1].lst+')' : '') }\n`) 
 		 		}
-	
+		 		noteList.push({note:item.note,class_id:item.class,week_id:weekin4.week_id})
+		 		
 	 			return ([
 	 				FontStyle(item.class.slice(3)),
 	 				FontStyle(item.SĐB),
@@ -402,6 +475,10 @@ const Xbxh = ({ week, weekin4, login }) => {
 	 			])		
 	 		})
 
+	 		console.log(noteList)
+	 		noteList.map(async (item) => {
+	 			await SendNote(item)
+	 		})
 	 	}
 
  		return result
@@ -775,39 +852,44 @@ const Xbxh = ({ week, weekin4, login }) => {
 			/>
 			<GradeShow data2={data2} grade={grade} week={week} fnc={false} snackFnc={SnackPopUp}/>
 		
-			<View style={{display:login == 'admin' ? 'flex' : 'none',position:'absolute',bottom:50,left:0,borderRadius:10}}>
-				<View style={{display:view}}>
-					<Button title='Thiết lập mới' color='gray' onPress={()=>{setModal(true);setIniScore({})}} />
-					<Divider bold={true}/>
-					<Button title='Lưu thành file excel' color='gray' onPress={()=>{
-						Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
-							{text:'Chắc',onPress:writeWorkbook},
-							{text:'Hủy bỏ',style:'cancel'}
-						],{cancelable:false})
-					}} />
-					<Divider bold={true}/>
-					<Button title='Tính điểm thủ công' color='gray' onPress={()=>{
-						Alert.alert('Thông báo','Bạn có chắc chắn muốn thực hiện hành động này?',[
-							{text:'Chắc',onPress:CalculatePoint},
-							{text:'Hủy bỏ',style:'cancel'}
-						],{cancelable:false})
-					}} />
-				</View>
+			{login.includes('sdl')
+			? (
+					<View style={{position:'absolute',bottom:50,left:5,borderRadius:10}}>
+						<Button title={`Lưu thành\nfile excel`} color='green' onPress={()=>{
+							Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
+								{text:'Chắc',onPress:writeWorkbook},
+								{text:'Hủy bỏ',style:'cancel'}
+							],{cancelable:false})
+						}} />
+					</View>
+				)
+			: (
+					<View style={{position:'absolute',bottom:50,left:0,borderRadius:10}}>
+						<View style={{display:view}}>
+							<Button title='Thiết lập mới' color='gray' onPress={()=>{setModal(true);setIniScore({})}} />
+							<Divider bold={true}/>
+							<Button title='Lưu thành file excel' color='gray' onPress={()=>{
+								Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
+									{text:'Chắc',onPress:writeWorkbook},
+									{text:'Hủy bỏ',style:'cancel'}
+								],{cancelable:false})
+							}} />
+							<Divider bold={true}/>
+							<Button title='Tính điểm thủ công' color='gray' onPress={()=>{
+								Alert.alert('Thông báo','Bạn có chắc chắn muốn thực hiện hành động này?',[
+									{text:'Chắc',onPress:CalculatePoint},
+									{text:'Hủy bỏ',style:'cancel'}
+								],{cancelable:false})
+							}} />
+						</View>
 
-        <TouchableOpacity onDismiss={()=>setView('none')} onPress={()=>{setVisible(true); setView(view == 'flex' ? 'none' : 'flex')}}>
-					<MaterialCommunityIcons name='dots-horizontal-circle' color='green' size={50} />
-				</TouchableOpacity>
+		        <TouchableOpacity onDismiss={()=>setView('none')} onPress={()=>{setVisible(true); setView(view == 'flex' ? 'none' : 'flex')}}>
+							<MaterialCommunityIcons name='dots-horizontal-circle' color='green' size={50} />
+						</TouchableOpacity>
 
-			</View>
-			
-			<View style={{display: login.includes('sdl') ? 'flex' : 'none',position:'absolute',bottom:50,left:5,borderRadius:10}}>
-				<Button title={`Lưu thành\nfile excel`} color='green' onPress={()=>{
-					Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
-						{text:'Chắc',onPress:writeWorkbook},
-						{text:'Hủy bỏ',style:'cancel'}
-					],{cancelable:false})
-				}} />
-			</View>
+					</View>
+				)
+			}		
 
 		</View>
 		<Snackbar
