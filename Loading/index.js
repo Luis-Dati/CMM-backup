@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar, KeyboardAvoidingView, Animated, Dimensions, Keyboard, Alert, ImageBackground, Image, TouchableOpacity, View, Text, TextInput, Pressable } from 'react-native';
+import { StatusBar, KeyboardAvoidingView, Animated, Dimensions, Keyboard, Alert, ImageBackground, Image, TouchableOpacity, View, Text, Pressable } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Animatable from 'react-native-animatable';
-import { Button, Menu, Divider, PaperProvider } from 'react-native-paper';
+import { Button, Menu, Divider, PaperProvider, TextInput } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import styles from './styles'; 
@@ -167,7 +167,7 @@ const Loading = ({navigation}) => {
 					Alert.alert('Thông báo','Bạn chưa nhập đầy đủ thông tin')
 					return
 				}
-				console.log(data)
+				
 				user = data.find((item)=>(item.user_role == name && item.password == pass)) 
 				
 				if (user) {
@@ -210,14 +210,7 @@ const Loading = ({navigation}) => {
 				<View style={{width:300}}>
 					<View style={[{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:-10}]}>
 						<Text style={styles.textForm}>Bạn đến từ trường</Text>
-						{/*<TextInput 
-							value={school}
-							selectionColor={'white'}
-							placeholder='Tên trường' 
-							placeholderTextColor='white'
-							onChangeText={value=>setSchool(value)} 
-							style={[styles.textForm,{borderColor:'gray',borderWidth:1,borderRadius:5,fontSize:16,paddingVertical:5,flex:1}]}
-						/>*/}
+						
 					<Dropdown
 	          style={[styles.dropdown]}
 	          iconStyle={{height:30,width:30}}
@@ -260,7 +253,7 @@ const Loading = ({navigation}) => {
 				</KeyboardAvoidingView>
 
 				
-				<View style={[styles.boxQs,(role == 'Người dùng khác' || userIn4) && {backgroundColor:'#AAAAAA',opacity:0.5}]}>
+				{/*<View style={[styles.boxQs,(role == 'Người dùng khác' || userIn4) && {backgroundColor:'#AAAAAA',opacity:0.5}]}>
 					<MaterialCommunityIcons name="account" size={25} color='white'/>
 					<TextInput
 						onChangeText={value => setName(value.replace(/\s+|,|-|[.]/g,''))}
@@ -289,7 +282,38 @@ const Loading = ({navigation}) => {
 						placeholder={isFocused2 ? '' : 'Mật khẩu'}
 						editable={role == 'Người dùng khác' ? false : true}
 					/>
-				</View>
+				</View>*/}
+				<View style={{width:'80%',maxWidth:200}}>
+					<TextInput
+						mode='outlined'
+			      label="Tài khoản"
+			      onChangeText={value => setName(value.replace(/\s+|,|-|[.]/g,''))}
+						value={name}
+						placeholderTextColor='white'
+						selectionColor={'white'}
+						cursorColor='white'
+						disabled={role == 'Người dùng khác' || userIn4 ? true : false}
+			      left={<TextInput.Icon icon="account" color='white'/>}
+			      textColor='white'
+			      theme={{ colors: { background: '#69B6F7' } }}
+			      activeOutlineColor='#fff'
+			    />
+					<TextInput
+						mode='outlined'
+			      label="Mật khẩu"
+			      onChangeText={setPass}
+						value={pass}
+						placeholderTextColor='white'
+						secureTextEntry
+						selectionColor={'white'}
+						cursorColor='white'
+						disabled={role == 'Người dùng khác' ? true : false}
+			      left={<TextInput.Icon icon="lock" color='white'/>}
+			      textColor='white'
+			      theme={{ colors: { background: '#63BDF6' } }}
+			      activeOutlineColor='#fff'
+			    />
+			  </View>
 
 				<Pressable
 					onPress={LoginCheck}

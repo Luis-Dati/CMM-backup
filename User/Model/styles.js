@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
 	container:{
 		flex:1,
 		padding:10,
+		backgroundColor: '#fff',
 	},
 	qsTxt:{
 		fontSize:16,
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
 	},
 	inputBox2:{
 		backgroundColor:'#D0D0D0',
-		flex:1,
+		width:'80%',
 		fontSize:16,
 		padding:5
 	},
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
 		fontSize:26,
 		fontWeight:'bold',
 		//marginTop:10,
-		marginBottom:10,
+		marginBottom:5,
 		textAlign:'center',
 	},	
 	itemBox:{
@@ -109,14 +110,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     width:120,
   },
-  filterBox:{
-  	backgroundColor:'white', 
-  	
-  	marginHorizontal:10, 
+  filterBox:{  
   	flexDirection:'row', 
   	alignItems:'center', 
   	justifyContent:'space-evenly',
   	shadowColor: '#000',
+  	borderRadius: 10,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
-    marginBottom: 5
+    width:'100%',
   },
 
 	//Lichtruc thi đua

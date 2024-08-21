@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, ScrollView, View, Text, TextInput, TouchableOpacity, Modal, Button, Alert } from 'react-native'
+import { FlatList, ScrollView, View, Text, TouchableOpacity, Modal, Alert } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SimpleGrid } from 'react-native-super-grid';
 import SwitchSelector from "react-native-switch-selector";
 import NumericInput from 'react-native-numeric-input';
+import { Button, TextInput, FAB, Portal, Avatar, DataTable, Card, RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
 
 import styles from './styles';
 import DATA_URL from '../../url.js'
-
-// var CryptoJS = require("crypto-js");
 import CryptoES from "crypto-es";
 
 function EncryptPass (pass, key) {
@@ -19,8 +18,6 @@ function DecryptPass (code, key) {
 	let bytes = CryptoES.AES.decrypt(code, key);
 	return bytes.toString(CryptoES.enc.Utf8);
 }
-
-
 
 const ShowClass = ({ data2, setSignal, right, view}) => {
   async function handleDel(item) {
@@ -83,41 +80,76 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 		} 
 
 		return (
-			<FlatList
-				ListHeaderComponent={
-					<View style={{flexDirection:'row',marginRight:right}}>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.175}]}>STT</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.4}]}>Tên lớp</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tài khoản</Text>
+			<Card>
+				<Card.Title title='Danh sách tài khoản' titleVariant='titleLarge' />
+				<Divider />
+				<Card.Content>
+					<DataTable>
+			      <DataTable.Header>
+			        <DataTable.Title textStyle={{fontSize:16}}>Tên lớp</DataTable.Title>
+			        <DataTable.Title textStyle={{fontSize:16}}>Tài khoản</DataTable.Title>
+			        <DataTable.Title numeric textStyle={{fontSize:16}}>Mật khẩu</DataTable.Title>
+			      </DataTable.Header>
+
+						<FlatList
+			        data={lst}
+			        renderItem={({item, index}) => (
+								<DataTable.Row key={index+1} onPress={()=>Alert.alert('Thông tin tài khoản',`Username: ${item.user_role} \nPassword: ${item.password}`)}>
+				          <DataTable.Cell>{item.user_class?.class_name}</DataTable.Cell>
+				          <DataTable.Cell>{item.user_role}</DataTable.Cell>
+				          <DataTable.Cell numeric>{item.password}</DataTable.Cell>
+				          <TouchableOpacity onPress={()=>{
+			 		  				Alert.alert('Thông báo','Bạn có chắc muốn xóa không',[
+			 		  					{text:'Ok',onPress:()=>handleDel(item,index)},
+			 		  					{text:'Hủy bỏ',style:'cancel'}
+			 		  				])}} style={[{alignItems:'center',justifyContent:'center'},{display:view}]}>
+										<MaterialCommunityIcons name='close' color='black' size={30} />
+									</TouchableOpacity>
+				        </DataTable.Row>
+			        )}
+			        keyExtractor={(item, idx) => item.user_class+idx}
+			        ListEmptyComponent={
+			        	<Text>Chưa có danh sách lớp học</Text>	
+			        }
+			      />			
+			    </DataTable>
+				</Card.Content>
+			</Card>
+			// <FlatList
+			// 	ListHeaderComponent={
+			// 		<View style={{flexDirection:'row',marginRight:right}}>
+			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.175}]}>STT</Text>
+			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.4}]}>Tên lớp</Text>
+			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tài khoản</Text>
 						
-					</View>
-				}
-        data={lst}
-        renderItem={({item, index}) => (
-        	<TouchableOpacity style={{flexDirection:'row'}}>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.175}]}>{index+1}</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.4}]}>{item.user_class?.class_name}</Text>
-						<View style={[styles.gridTxt2,{flex:1}]}>
- 		  				<Text>Tên: {item.user_role}</Text>
- 		  				<Text>Mật khẩu: {item.password}</Text>
- 		  			</View>
- 		  			<TouchableOpacity onPress={()=>{
- 		  				Alert.alert('Thông báo','Bạn có chắc muốn xóa không',[
- 		  					{text:'Ok',onPress:()=>handleDel(item,index)},
- 		  					{text:'Hủy bỏ',style:'cancel'}
- 		  				])}} style={[{alignItems:'center',justifyContent:'center'},{display:view}]}>
-							<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
-						</TouchableOpacity>
-					</TouchableOpacity>
-        )}
-        keyExtractor={(item, idx) => item.user_class+idx}
-        ListFooterComponent={
-      		<View style={{height:50}} />  	
-        }
-        ListEmptyComponent={
-        	<Text>Chưa có danh sách lớp học</Text>	
-        }
-      />					
+			// 		</View>
+			// 	}
+      //   data={lst}
+      //   renderItem={({item, index}) => (
+      //   	<TouchableOpacity style={{flexDirection:'row'}}>
+			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.175}]}>{index+1}</Text>
+			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.4}]}>{item.user_class?.class_name}</Text>
+			// 			<View style={[styles.gridTxt2,{flex:1}]}>
+ 		  // 				<Text>Tên: {item.user_role}</Text>
+ 		  // 				<Text>Mật khẩu: {item.password}</Text>
+ 		  // 			</View>
+ 		  // 			<TouchableOpacity onPress={()=>{
+ 		  // 				Alert.alert('Thông báo','Bạn có chắc muốn xóa không',[
+ 		  // 					{text:'Ok',onPress:()=>handleDel(item,index)},
+ 		  // 					{text:'Hủy bỏ',style:'cancel'}
+ 		  // 				])}} style={[{alignItems:'center',justifyContent:'center'},{display:view}]}>
+			// 				<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
+			// 			</TouchableOpacity>
+			// 		</TouchableOpacity>
+      //   )}
+      //   keyExtractor={(item, idx) => item.user_class+idx}
+      //   ListFooterComponent={
+      // 		<View style={{height:50}} />  	
+      //   }
+      //   ListEmptyComponent={
+      //   	<Text>Chưa có danh sách lớp học</Text>	
+      //   }
+      // />					
 		)
 	}
 	return (
@@ -125,17 +157,21 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 			<SwitchSelector
 			  initial={0}
 			  onPress={value => setGrade(value)}
-			  textColor='blue'
+			  textColor='#1FBFF4'
 			  selectedColor='#fff'
-			  buttonColor='blue'
-			  borderColor='blue'
+			  buttonColor='#1FBFF4'
+			  borderColor='#1FBFF4'
 			  hasPadding
 			  options={options}
 			  testID="gender-switch-selector"
   			accessibilityLabel="gender-switch-selector"
 			/>
 			<View style={{height:10}} />
-			<ShowClassMethod grade={grade} />
+			<ScrollView>
+				<ShowClassMethod grade={grade} />
+				<View style={{height:20}} />
+			</ScrollView>
+			
 			
 		</View>	
 	)
@@ -145,6 +181,10 @@ const Dslh = ({ level }) => {
 	const [modal, setModal] = useState(false)
 	const [modal2, setModal2] = useState(false)
 	const [tool, setTool] = useState(true)
+
+	const [state, setState] = React.useState({ open: false });
+  const onStateChange = ({ open }) => setState({ open });
+  const { open } = state;
 
 	const [view, setView] = useState('none')
 	const [totalView, setTotalView] = useState('none')
@@ -453,46 +493,50 @@ const Dslh = ({ level }) => {
   }
 
 	return (		
-		<View style={styles.container}>
-			<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',marginBottom:10}}>
-				<Button title='Tạo mới' color='green' onPress={()=>{
-						setModal(true);
-						setTool(true)
-						setLst12({});setLst10({});setLst11({})
-						setk10(0);setk11(0);setk12(0)
-						setView('none');setRight(0)
-					}} 
-				/>
-				<View style={{width:10}} />
-				<Button disabled={data2.length == 0 ? true : false} title='Xóa bỏ' color='red' onPress={()=>{
-						Alert.alert('Thông báo', 'Bạn có chắc muốn xóa toàn bộ danh sách không. Thao tác này sẽ xoá toàn bộ lịch trực, điểm, tài khoản sao đỏ của tất cả các lớp',[
-							{text:'Chắc',onPress: handleDelAll},
-							{text:'Hủy bỏ',style:'cancel'}
-						])
-					}} 
-				/>
-			</View>
-
+		<PaperProvider>
 			<ShowClass data2={data2} setSignal={setSignal} right={right} view={view}/>
-
-			<View style={{position:'absolute',bottom:5,left:0,flexDirection:'row',borderRadius:10}}>
-{/*			 <TouchableOpacity onPress={()=>setTotalView(totalView == 'flex' ? 'none' : 'flex')} style={styles.toolTxtBox}>
-				 	<Text style={{fontSize:16,fontWeight:'500'}}>Hộp công cụ</Text>
-				 </TouchableOpacity>*/}
-
-				<View style={{flexDirection:'row'}}>
-					<TouchableOpacity onPress={() => {setModal2(true);setView('none');setRight(0)}}>
-						<MaterialCommunityIcons name='plus-circle' size={50} color='blue' />	
-					</TouchableOpacity>
-					<TouchableOpacity onPress={() => {
-							setView(view == 'flex' ? 'none' : 'flex')
-							setRight(right == 30 ? 0 : 30)
-						}}> 
-						<MaterialCommunityIcons name='delete-circle' size={50} color='blue' />
-					</TouchableOpacity>
-				</View>
-			</View>
 			
+			<Portal>
+        <FAB.Group
+          open={open}
+          visible
+          icon={open ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline'}
+          actions={[
+				    {
+				      icon: 'plus-circle',
+				      label: 'Tạo 1 lớp',
+				      onPress : () => {setModal2(true);setView('none');setRight(0)}
+				    },
+				    { 
+				    	icon: 'close-circle', 
+				    	label: 'Xoá 1 lớp',
+				    	onPress: () => {setView(view == 'flex' ? 'none' : 'flex');setRight(right == 30 ? 0 : 30)},
+				    },
+				    {
+				      icon: 'playlist-plus',
+				      label: 'Tạo mới danh sách',
+				      onPress: ()=>{
+								setModal(true);setTool(true);
+								setLst12({});setLst10({});setLst11({})
+								setk10(0);setk11(0);setk12(0)
+								setView('none');setRight(0)
+							}
+				    },
+				    {
+				      icon: 'playlist-remove',
+				      label: 'Xoá bỏ danh sách',
+				      onPress: () => {
+								Alert.alert('Thông báo', 'Bạn có chắc muốn xóa toàn bộ danh sách không. Thao tác này sẽ xoá toàn bộ lịch trực, điểm, tài khoản sao đỏ của tất cả các lớp',[
+									{text:'Chắc',onPress: handleDelAll},
+									{text:'Hủy bỏ',style:'cancel'}
+								])
+							},
+				    },
+				  ]}
+          onStateChange={onStateChange}
+        />
+      </Portal>
+
 			<Modal
 				animationType='slide'
 				transparent={true}
@@ -568,15 +612,21 @@ const Dslh = ({ level }) => {
 								      //fixed
 								      spacing={10}
 								      renderItem={({ key, index }) => (
-								        <View style={[styles.itemContainer,{borderWidth:1}]}>
-								        	<TextInput 
-								        		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
-								        		key={index} 
-								        		value={lst10[parseInt(index)]}
-								        		onChangeText={value => handleInputChange10(index,value)}
-								        	/>
-								        	<Text>{index+1}</Text>
-								        </View>
+								        // <View style={[styles.itemContainer,{borderWidth:1}]}>
+								        // 	<TextInput 
+								        // 		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
+								        // 		key={index} 
+								        // 		value={lst10[parseInt(index)]}
+								        // 		onChangeText={value => handleInputChange10(index,value)}
+								        // 	/>
+								        // 	<Text>{index+1}</Text>
+								        // </View>
+								        <TextInput 
+								        	contentStyle={{paddingHorizontal:5}}
+								        	mode='outlined'
+								        	value={lst10[parseInt(index)]}
+								        	onChangeText={value => handleInputChange10(index,value)}
+								        />
 								      )}
 								    />
 									</View>
@@ -591,15 +641,21 @@ const Dslh = ({ level }) => {
 								      //fixed
 								      spacing={10}
 								      renderItem={({ key, index }) => (
-								        <View style={[styles.itemContainer,{borderWidth:1}]}>
-								        	<TextInput 
-								        		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
-								        		key={index} 
-								        		value={lst11[index]}
-								        		onChangeText={value => handleInputChange11(index,value)}
-								        	/>
-								        	<Text>{index+1}</Text>
-								        </View>
+								        // <View style={[styles.itemContainer,{borderWidth:1}]}>
+								        // 	<TextInput 
+								        // 		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
+								        // 		key={index} 
+								        // 		value={lst11[index]}
+								        // 		onChangeText={value => handleInputChange11(index,value)}
+								        // 	/>
+								        // 	<Text>{index+1}</Text>
+								        // </View>
+								        <TextInput 
+								        	contentStyle={{paddingHorizontal:5}}
+								        	mode='outlined'
+								        	value={lst11[parseInt(index)]}
+								        	onChangeText={value => handleInputChange11(index,value)}
+								        />
 								      )}
 								    />										
 									</View>
@@ -614,15 +670,21 @@ const Dslh = ({ level }) => {
 								      //fixed
 								      spacing={10}
 								      renderItem={( { key, index } ) => (
-								        <View style={[styles.itemContainer,{borderWidth:1}]}>
-								        	<TextInput 
-								        		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
-								        		value={lst12[index]}
-								        		key={index} 
-								        		onChangeText={value => handleInputChange12(index,value)}
-								        	/>
-								        	<Text>{index+1}</Text>
-								        </View>
+								        // <View style={[styles.itemContainer,{borderWidth:1}]}>
+								        // 	<TextInput 
+								        // 		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
+								        // 		value={lst12[index]}
+								        // 		key={index} 
+								        // 		onChangeText={value => handleInputChange12(index,value)}
+								        // 	/>
+								        // 	<Text>{index+1}</Text>
+								        // </View>
+								        <TextInput 
+								        	contentStyle={{paddingHorizontal:5}}
+								        	mode='outlined'
+								        	value={lst12[parseInt(index)]}
+								        	onChangeText={value => handleInputChange12(index,value)}
+								        />
 								      )}
 								    />										
 									</View>
@@ -633,8 +695,8 @@ const Dslh = ({ level }) => {
 					</View>
 					<View style={{marginHorizontal:20,marginBottom:30}}>
 							{tool
-							?	(<Button color='green' title='Tạo mới' onPress={handleCreate} />)
-							:	(<Button title='Chỉnh sửa' onPress={()=>{setModal(false)}} />)
+							?	(<Button mode='contained' buttonColor='green' onPress={handleCreate}>Tạo mới</Button>)
+							:	(<Button mode='contained' buttonColor='#0288d1' onPress={()=>{setModal(false)}}>Chỉnh sửa</Button>)
 							}			
 						</View>	
 				</View>
@@ -646,35 +708,36 @@ const Dslh = ({ level }) => {
 				visible={modal2}
 			>
 				<View style={[styles.entireView,{justifyContent:'center',alignItems:'center'}]}>
-					<View style={{backgroundColor:'#FFF',width:'80%',height:220,padding:10}}>
-						<TouchableOpacity 
-							onPress={()=>{setModal2(false)}}
-							style={{alignSelf:'flex-end'}}
-						>
-							<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
-						</TouchableOpacity>
-						<View style={styles.boxName}>
-			 				<Text style={[styles.qsTxt,{marginRight:10}]}>Khối</Text>
-			 				<NumericInput  
-									// value={score}
-									onChange={value => {}} 
-									rounded
-								/>
-			 			</View>
-			 			<View style={styles.boxName}>
-			 				<Text style={[styles.qsTxt,{marginRight:10}]}>Tên lớp mới</Text>
-			 				<TextInput 
-			 					style={styles.inputBox2} 
-			 					value={newOne}
-			 					onChangeText={value=>setNewOne(value)}
-			 				/>
-			 			</View>
-			 			<Button title='Gửi' onPress={handleCreateOne}/>
-					</View>
+					<Card>
+						<Card.Content>
+						<DataTable>
+							<DataTable.Row>
+								<DataTable.Cell>Khối</DataTable.Cell>
+								<View>
+									<NumericInput  
+										onChange={value => {}} 
+										rounded
+									/>
+								</View>
+							</DataTable.Row>
+								<TextInput 
+									mode='outlined'
+				 					label='Tên lớp mới' 
+				 					value={newOne}
+				 					onChangeText={value=>setNewOne(value)}
+				 				/>
+						</DataTable>
+						</Card.Content>
+						<Card.Actions>
+							<Button mode='contained' buttonColor='#0288d1' onPress={handleCreateOne}>Xác nhận</Button>
+							<Button mode='outlined' buttonColor='rgb(255, 218, 214)' onPress={()=>setModal2(false)} >Huỷ bỏ</Button>
+						</Card.Actions>
+					</Card>
 				</View>
+				
 			</Modal>	
 			
-		</View>			
+		</PaperProvider>			
 	)
 }
 

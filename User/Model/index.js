@@ -40,7 +40,7 @@ const Model = ({route, navigation}) => {
 		}
 	}
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container]}>
 			<Comparision />		
 		</View>
 	)

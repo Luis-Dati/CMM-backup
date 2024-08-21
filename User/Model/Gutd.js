@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { FlatList, View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Button, ActivityIndicator, Alert } from 'react-native'
+import { Dimensions, FlatList, View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Button, ActivityIndicator, Alert } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import NumericInput from 'react-native-numeric-input';
 import { RadioButton } from 'react-native-paper';
-import * as RNPaper from 'react-native-paper';
+import { DataTable, PaperProvider, Card, Divider } from 'react-native-paper';
 
 import styles from './styles';
 import DATA_URL from '../../url.js'
+
+let deviceWidth = Dimensions.get('window').width
 
 const Gutd = () => {
 	const [gutd, setGutd] = useState(null);
@@ -35,6 +37,19 @@ const Gutd = () => {
   useEffect(() => {
   	fetchData()
   }, [signal])
+
+  const [page, setPage] = useState(0);
+  const [numberOfItemsPerPageList] = useState([7, 8, 9, 10]);
+  const [itemsPerPage, onItemsPerPageChange] = useState(
+    numberOfItemsPerPageList[0]
+  );
+
+  const from = page * itemsPerPage;
+  const to = Math.min((page + 1) * itemsPerPage, gutd?.length);
+
+  useEffect(() => {
+    setPage(0);
+  }, [itemsPerPage]);
 
 	const handleDel = async (item,index) => {
 		let option={
@@ -125,48 +140,59 @@ const Gutd = () => {
 	}
 
 	return (
-		<View style={{flex:1}}>
-			<Text style={styles.header}>Bảng các loại vi phạm</Text>			
+		<PaperProvider>	
+			<ScrollView>
+				<Card>
+					<Card.Title titleVariant='headlineMedium' title='Bảng các loại vi phạm' />
+					<Divider />
+					<Card.Content>
+						<DataTable>
+				      <DataTable.Header>
+				        <DataTable.Title textStyle={{fontSize:16}}>STT</DataTable.Title>
+				        <DataTable.Title textStyle={{fontSize:16}}>Tên vi phạm</DataTable.Title>
+				        <DataTable.Title textStyle={{fontSize:16}} numeric>Điểm -/+</DataTable.Title>
+				      </DataTable.Header>
 
-			<FlatList
-				contentContainerStyle={{margin:5}}
-				ListHeaderComponent={
-					<View style={{flexDirection:'row',marginRight:right}}>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.25}]}>STT</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tên vi phạm</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>Điểm trừ/cộng</Text>				
-					</View>
-				}
-        data={gutd}
-        renderItem={({item, index}) => (
-        	<>
-		        <TouchableOpacity 
-							style={{flexDirection:'row'}} 
-							onPress={()=>{
-								setModal2(true);setIdChange(item.name_vp_id);
-								setNvp(item.name_vp);setNscore(item.minus_pnt)
-							}}
-						>
-							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.25}]}>{index+1}</Text>
-							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>{item.name_vp}</Text>
-							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>{item.minus_pnt}</Text>
-							<TouchableOpacity onPress={()=>handleDel(item,index)} style={[{alignItems:'center',justifyContent:'center'},{display:view}]}>
-								<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
-							</TouchableOpacity>
-						</TouchableOpacity>
-					</>
-        )}
-        keyExtractor={(item, idx) => item.name_vp_id+idx}
-        ListFooterComponent={
-      		<View style={{height:50}} />  	
-        }
-        ListEmptyComponent={
-        	<View>
-						<Text>Chưa có vi phạm</Text>
-						<ActivityIndicator size="large" />
-					</View>	
-        }
-      />
+				      <FlatList
+				        data={gutd?.slice(from, to)}
+				        renderItem={({item, index}) => (
+				        	<DataTable.Row key={index+1} 
+				        		onPress={()=>{
+										setModal2(true);setIdChange(item.name_vp_id);
+										setNvp(item.name_vp);setNscore(item.minus_pnt)
+									}}>
+					          <DataTable.Cell>{index+1 + page*itemsPerPage}</DataTable.Cell>
+					          <View style={{alignSelf:'center'}}>
+					          	<Text numberOfLines={1}>{item.name_vp}</Text>
+					          </View>
+					          <DataTable.Cell numeric>{item.minus_pnt}</DataTable.Cell>
+					        </DataTable.Row>
+				        )}
+				        keyExtractor={(item, idx) => item.name_vp_id+idx}
+				        ListEmptyComponent={
+				        	<View>
+										<Text>Chưa có vi phạm</Text>
+										<ActivityIndicator size="large" />
+									</View>	
+				        }
+				      />
+
+				      <DataTable.Pagination
+				        page={page}
+				        numberOfPages={Math.ceil((gutd ? gutd.length : 0) / itemsPerPage)}
+				        onPageChange={(page) => setPage(page)}
+				        label={`${from + 1}-${to} của ${gutd ? gutd.length : 0}`}
+				        numberOfItemsPerPageList={numberOfItemsPerPageList}
+				        numberOfItemsPerPage={itemsPerPage}
+				        onItemsPerPageChange={onItemsPerPageChange}
+				        showFastPaginationControls
+				        selectPageDropdownLabel={'Số hàng mỗi trang'}
+				      />
+				    </DataTable>
+					</Card.Content>
+				</Card>
+			</ScrollView>
+			
 
 			<Modal
 				animationType='fade'
@@ -284,7 +310,7 @@ const Gutd = () => {
 					</View>
 				</View>
 			</Modal>	
-		</View>
+		</PaperProvider>
 	)
 }
 

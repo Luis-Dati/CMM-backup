@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, RefreshControl, FlatList, Alert, Button, SectionList, View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
+import { TextInput, RefreshControl, FlatList, Alert, Button, View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-// import { TextInput } from 'react-native-paper';
-import { SimpleGrid } from 'react-native-super-grid';
 import SwitchSelector from "react-native-switch-selector";
 import { useNavigation } from '@react-navigation/native';
 import NumericInput from 'react-native-numeric-input';
-import { RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
-// import XLSX from 'xlsx';
+import { useTheme, FAB, Portal, Avatar, DataTable, Card, RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
 import XLSX from 'xlsx-js-style'
 import { documentDirectory, writeAsStringAsync, readAsStringAsync } from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 
+import { FormatDate, ConvertTime } from '../../toolkit.js';
 import styles from './styles';
 import DATA_URL from '../../url.js'
 
@@ -30,7 +28,7 @@ const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc}) => {
       snackFnc('Đã làm mới xong')
     }, 2000);
   }, []);
-console.log(data2)
+
 	let lst = null
 	
 	const bMap = new Map();
@@ -44,66 +42,43 @@ console.log(data2)
 	}
 
 	return (
-		// <ScrollView>
-		// 	{lst != null
-		// 	?	(
-		// 			<View>
-		// 				<Text style={styles.sectionHeader}>Tuần {week.slice(2)}</Text>
-		// 				<View style={{flexDirection:'row'}}>
-		// 					<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>Thứ hạng</Text>
-		// 					<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tên lớp</Text>
-		// 					<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Điểm số</Text>
-		// 				</View>
-						
-		// 	      {lst.map((item,index)=>(
-		// 					<TouchableOpacity style={{flexDirection:'row'}} onPress={fnc ? () => onPress(item.class_id?.class_id, item.class_id?.class_name) : ()=>{}}>
-		// 						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>{index+1}</Text>
-		// 						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>{item.class_id?.class_name}</Text>
-		// 						<Text style={[styles.gridTxt2,{flex:1}]}>{item.score}</Text>	
-		// 					</TouchableOpacity>
-		// 				))}
-		// 			</View>
-		// 		)
-		// 	: (
-		// 			<View style={{marginTop:30,justifyContent:'center',alignItems:'center'}}>
-		// 				<ActivityIndicator size="large" />
-		// 			</View>
-		// 		)
-		// 	}	
-		// </ScrollView>
-		<View>
-			<FlatList
-				refreshControl={
-	        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-	      }
-				ListHeaderComponent={
-					<View>
-						<Text style={styles.sectionHeader}>Tuần {week.slice(2)}</Text>
-						<View style={{flexDirection:'row'}}>
-							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>Thứ hạng</Text>
-							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tên lớp</Text>
-							<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Điểm số</Text>
-						</View>
-					</View>
-				}
-	      data={lst}
-	      renderItem={({item, index}) => (
-	      	<TouchableOpacity style={{flexDirection:'row'}} onPress={fnc ? () => onPress(item.class_id?.class_id, item.class_id?.class_name) : ()=> {setModal(true);setKlass(item.class_id)}}>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.8}]}>{index+1}</Text>
-						<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>{item.class_id?.class_name}</Text>
-						<Text style={[styles.gridTxt2,{flex:1}]}>{item.score}</Text>	
-					</TouchableOpacity>
-	      )}
-	      keyExtractor={(item, idx) => JSON.stringify(item.class_id)}
-	      // ListFooterComponent={
-	    	// 	<View style={{height:50}} />  	
-	      // }
-	      ListEmptyComponent={
-	      	<View style={{marginTop:30,justifyContent:'center',alignItems:'center'}}>
-		 				<ActivityIndicator size="large" />
-		 			</View>
-	      }
-	    />
+		<>
+			<Card>
+				<Card.Title title={`Tuần ${week.slice(2)}`} titleVariant='titleLarge'/>
+				<Divider />
+				<Card.Content>
+					<DataTable>
+			      <DataTable.Header>
+			        <DataTable.Title textStyle={{fontSize:16}}>Lớp</DataTable.Title>
+			        <DataTable.Title textStyle={{fontSize:16}} numeric>Điểm số</DataTable.Title>
+			        <DataTable.Title textStyle={{fontSize:16}} numeric>Thứ hạng</DataTable.Title>
+			      </DataTable.Header>
+
+						<FlatList
+							refreshControl={
+				        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				      }
+				      data={lst}
+				      renderItem={({item, index}) => (
+			        	<DataTable.Row 
+			        		key={index+1} 
+			        		onPress={fnc ? () => onPress(item.class_id?.class_id, item.class_id?.class_name) : () => {setModal(true);setKlass(item.class_id)}}
+			        	>
+				          <DataTable.Cell>{item.class_id?.class_name}</DataTable.Cell>
+				          <DataTable.Cell numeric>{item.score}</DataTable.Cell>
+				          <DataTable.Cell numeric>{index+1}</DataTable.Cell>
+				        </DataTable.Row>
+				      )}
+				      keyExtractor={(item, idx) => JSON.stringify(item.class_id)}
+				      ListEmptyComponent={
+				      	<View style={{marginTop:30,justifyContent:'center',alignItems:'center'}}>
+					 				<ActivityIndicator size="large" />
+					 			</View>
+				      }
+				    />
+			    </DataTable>
+				</Card.Content>
+			</Card>
 
 	    <Modal
 				animationType='fade'
@@ -130,12 +105,17 @@ console.log(data2)
 					</View>
 				</View>
 			</Modal>	
-    </View>
+    </>
 	)
 }
 
 const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
+	const theme = useTheme();
 	const navigation = useNavigation();
+
+	const [state, setState] = React.useState({ open: false });
+  const onStateChange = ({ open }) => setState({ open });
+  const { open } = state;
 
 	const [choice, setChoice] = useState('all');
 	const [scoreList, setScoreList] = useState(null)
@@ -250,6 +230,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		await TinhDiem2(data3)
 		SnackPopUp('Đã tính điểm xong')
 		setSignal('Complete! '+new Date().toString())
+		await CalculateData2()
 
 		async function TinhDiem2(data) {
 			let KList;
@@ -308,7 +289,6 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		  });
 		}
 
-		await CalculateSomeData()
 	}
 
  	// calculate data for xlsx
@@ -344,8 +324,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	  }
 	})
 
- 	async function CalculateSomeData() {
- 		SnackPopUp('Hãy chờ một chút trong khi hệ thống chuẩn bị dữ liệu')
+ 	async function CalculateData2() {
  		let temp = [], result = [];
 
 		async function SendNote(param) {
@@ -407,13 +386,103 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 			  
 			}
 
+			let noteList = [];
+
+	 		temp.map(item => { //Lặp qua từng lớp
+	 			let tmpVpmRule = data3.filter((item2)=>item2.class_id == item.class) //Lọc ra vi phạm từng lớp và xử lí
+	 			item.PlusĐT = 0 
+	 			item.MinusĐT = 0 
+	 			item.MinusPnt = 0 
+	 			item.SoTiet = 0 
+	 			item.SĐB = 0
+	 			item.supernote = {};
+	 			
+	 			tmpVpmRule.map(obj => {
+	 				if (obj.bonus == null) {
+	 					item.MinusPnt = item.MinusPnt + obj.name_vp_id.minus_pnt * obj.quantity
+	 					
+	 					if (item.supernote[obj.name_vp_id.name_vp]) {
+	 						item.supernote[obj.name_vp_id.name_vp].num += obj.quantity
+	 						item.supernote[obj.name_vp_id.name_vp].lst += `, ${obj.name_student}` 
+	 					} else {
+	 						item.supernote[obj.name_vp_id.name_vp] = {}
+	 						item.supernote[obj.name_vp_id.name_vp].num = obj.quantity
+	 						item.supernote[obj.name_vp_id.name_vp].lst = obj.name_student
+	 					}
+
+	 				} else {
+	 					// xử lí sđb và bonus
+	 					if (obj.bonus != 'Điểm sổ đầu bài') {
+	 						item.supernote[obj.bonus]	= 0		
+	 						if (obj.quantity < 0 ) {
+	 							item.MinusĐT += obj.quantity
+	 						} else {
+	 							item.PlusĐT += obj.quantity
+	 						}
+	 					}
+	 				}
+
+	 			})
+
+	 			item.note = '';
+	 			if (item.supernote) {
+		 			let s = Object.entries(item.supernote) 
+		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } ${ (itm[1].lst ? '('+itm[1].lst+')' : '') }\n`) 
+		 		}
+		 		noteList.push({note:item.note,class_id:item.class,week_id:weekin4.week_id})		
+	 		})
+
+	 		noteList.map(async (item) => {
+	 			await SendNote(item)
+	 		})
+	 	}
+ 	}	
+
+ 	async function CalculateSomeData() {
+ 		SnackPopUp('Hãy chờ một chút trong khi hệ thống chuẩn bị dữ liệu')
+ 		let temp = [], result = [];
+
+ 		if (data2 != null && data3 != null) {
+	 		const groupedByGrade = data2.reduce((groups, item) => {
+			  const { week_id, class_id, ...rest } = item;
+			  const grade = class_id.class_id.slice(3, 5);
+
+			  if (!groups[grade]) {
+			    groups[grade] = [];
+			  }
+
+			  groups[grade].push({ ...rest, class_id: class_id.class_id });
+			  return groups;
+			}, {});
+
+			for (const gradeTmp in groupedByGrade) {
+		    const classes = groupedByGrade[gradeTmp];
+		    classes.sort((a, b) => b.score - a.score);
+
+		    let rank = 0;
+		    let prevScore = classes[0].score;
+
+		    for (const classObj of classes) {
+		      rank++;
+
+		      temp.push({
+		        class: classObj.class_id,
+		        score: classObj.score,
+		        rank: rank
+		      });
+
+		      prevScore = classObj.score;
+		    }
+			  
+			}
+
 			if (login.includes('sdl')) {
 				temp = [ temp.find((item) => login.includes((item.class.slice(3)))) ]
 			}
 
-			let noteList = []
+			let s;
 
-	 		result = temp.map(async item => { //Lặp qua từng lớp
+	 		result = temp.map(item => { //Lặp qua từng lớp
 	 			let tmpVpmRule = data3.filter((item2)=>item2.class_id == item.class) //Lọc ra vi phạm từng lớp và xử lí
 	 			item.PlusĐT = 0 
 	 			item.MinusĐT = 0 
@@ -460,7 +529,6 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		 			s = Object.entries(item.supernote) 
 		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } ${ (itm[1].lst ? '('+itm[1].lst+')' : '') }\n`) 
 		 		}
-		 		noteList.push({note:item.note,class_id:item.class,week_id:weekin4.week_id})
 		 		
 	 			return ([
 	 				FontStyle(item.class.slice(3)),
@@ -473,11 +541,6 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	 				FontStyleNote(item.note.slice(0, item.note.length-1)), 
 	 				(item.supernote ? s.length : 1)
 	 			])		
-	 		})
-
-	 		console.log(noteList)
-	 		noteList.map(async (item) => {
-	 			await SendNote(item)
 	 		})
 	 	}
 
@@ -699,44 +762,42 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
     }
   }
 
-	function ConvertTime(item){
-		const currentTime = new Date(item);
-
-		// Lấy offset (độ lệch) múi giờ của máy tính địa phương so với UTC
-		const localOffset = currentTime.getTimezoneOffset();
-
-		// Tính toán offset (độ lệch) múi giờ từ GMT+0 đến GMT+7 (7 * 60 phút)
-		const offsetGMT7 = 7 * 60;
-
-		// Tính toán timestamp mới cho thời gian theo múi giờ GMT+7
-		const timestampGMT7 = currentTime.getTime() + localOffset * 60 * 1000 + offsetGMT7 * 60 * 1000;
-
-		// Tạo một đối tượng Date mới từ timestamp đã tính toán
-		const date = new Date(timestampGMT7);
-		return date;
-	}
-
-	function FormatDate(item){
-		const formatter = new Intl.DateTimeFormat('vi-VN', {
-			year: 'numeric',     // Năm, ví dụ: 2023
-			month: 'long',       // Tháng, ví dụ: Tháng Tám
-			day: 'numeric',      // Ngày trong tháng, ví dụ: 2
-		});
-
-		const date = ConvertTime(item)
-		return formatter.format(date);
-	}
-
-	const [view, setView] = useState('none')
 	const [rootPnt, setRootPnt] = useState(0)
 	const [SDBPnt, setSDBPnt] = useState(0)
 	const [MSDPnt, setMSDPnt] = useState(0)
 	const [MDTPnt, setMDTPnt] = useState(0)
 	const [PDTPnt, setPDTPnt] = useState(0)
 
+	const actions = [
+    {
+      icon: 'calculator',
+      label: 'Tính điểm',
+      onPress: () => {
+				Alert.alert('Thông báo','Bạn có chắc chắn muốn thực hiện hành động này?',[
+					{text:'Chắc',onPress:CalculatePoint},
+					{text:'Hủy bỏ',style:'cancel'}
+				],{cancelable:false})
+			},
+    },
+    { 
+    	icon: 'cog', 
+    	label: 'Thiết lập mới',
+    	onPress: () => {setModal(true);setIniScore({})},
+    },
+    {
+      icon: 'file-export',
+      label: 'Lưu file Excel',
+      onPress: () => {
+				Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
+					{text:'Chắc',onPress:writeWorkbook},
+					{text:'Hủy bỏ',style:'cancel'}
+				],{cancelable:false})
+			},
+    },
+  ]
+
 	return (
 	<PaperProvider>
-		<View style={styles.container}>
 			<Modal
 				animationType='fade'
 				transparent={true}
@@ -829,8 +890,8 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 						</View>*/}
 
 						<RadioButton.Group  onValueChange={value => setChoice(value)} value={choice}>
-				      <RadioButton.Item color='blue' label="Áp dụng cho tất cả các tuần" value="all" />
-				      <RadioButton.Item color='blue' label="Chỉ áp dụng cho tuần hiện tại" value="once" />
+				      <RadioButton.Item color='#1FBFF4' label="Áp dụng cho tất cả các tuần" value="all" />
+				      <RadioButton.Item color='#1FBFF4' label="Chỉ áp dụng cho tuần hiện tại" value="once" />
 				    </RadioButton.Group>
 					</ScrollView>
 					<View style={{marginHorizontal:20,marginBottom:30}}>
@@ -841,57 +902,32 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 			<SwitchSelector
 			  initial={0}
 			  onPress={value => setGrade(value)}
-			  textColor='blue'
+			  textColor='#1FBFF4'
 			  selectedColor='#fff'
-			  buttonColor='blue'
-			  borderColor='blue'
+			  buttonColor='#1FBFF4'
+			  borderColor='#1FBFF4'
 			  hasPadding
 			  options={options}
 			  testID="gender-switch-selector"
 				accessibilityLabel="gender-switch-selector"
 			/>
-			<GradeShow data2={data2} grade={grade} week={week} fnc={false} snackFnc={SnackPopUp}/>
-		
-			{login.includes('sdl')
-			? (
-					<View style={{position:'absolute',bottom:50,left:5,borderRadius:10}}>
-						<Button title={`Lưu thành\nfile excel`} color='green' onPress={()=>{
-							Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
-								{text:'Chắc',onPress:writeWorkbook},
-								{text:'Hủy bỏ',style:'cancel'}
-							],{cancelable:false})
-						}} />
-					</View>
-				)
-			: (
-					<View style={{position:'absolute',bottom:50,left:0,borderRadius:10}}>
-						<View style={{display:view}}>
-							<Button title='Thiết lập mới' color='gray' onPress={()=>{setModal(true);setIniScore({})}} />
-							<Divider bold={true}/>
-							<Button title='Lưu thành file excel' color='gray' onPress={()=>{
-								Alert.alert('Thông báo','Bạn có chắc chắn muốn xuất kết quả thành file excel?',[
-									{text:'Chắc',onPress:writeWorkbook},
-									{text:'Hủy bỏ',style:'cancel'}
-								],{cancelable:false})
-							}} />
-							<Divider bold={true}/>
-							<Button title='Tính điểm thủ công' color='gray' onPress={()=>{
-								Alert.alert('Thông báo','Bạn có chắc chắn muốn thực hiện hành động này?',[
-									{text:'Chắc',onPress:CalculatePoint},
-									{text:'Hủy bỏ',style:'cancel'}
-								],{cancelable:false})
-							}} />
-						</View>
+			<View style={{height:10}} />
 
-		        <TouchableOpacity onDismiss={()=>setView('none')} onPress={()=>{setVisible(true); setView(view == 'flex' ? 'none' : 'flex')}}>
-							<MaterialCommunityIcons name='dots-horizontal-circle' color='green' size={50} />
-						</TouchableOpacity>
+			<ScrollView>
+				<GradeShow data2={data2} grade={grade} week={week} fnc={false} snackFnc={SnackPopUp}/>
+				<View style={{height:50}} />			
+			</ScrollView>
 
-					</View>
-				)
-			}		
+			<Portal>
+        <FAB.Group
+          open={open}
+          visible
+          icon={open ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline'}
+          actions={login.includes('sdl') ? [actions[2]] : actions}
+          onStateChange={onStateChange}
+        />
+      </Portal>
 
-		</View>
 		<Snackbar
       visible={snackView}
       onDismiss={()=>setSnackView(false)}

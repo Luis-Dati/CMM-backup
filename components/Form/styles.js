@@ -63,8 +63,8 @@ const styles = StyleSheet.create({
 		marginRight:5
 	},
 	handMBtn:{
-		width:50,
-		height:50,
+		width:45,
+		height:45,
 		backgroundColor:'blue',
 		borderRadius:25,
 		justifyContent:'center',

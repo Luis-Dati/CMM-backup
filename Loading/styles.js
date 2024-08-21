@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
 	},
 	form:{
 		//flex:1,
-		backgroundColor:'transparent',
 		justifyContent:'center',
 		alignItems:'center'
 	},

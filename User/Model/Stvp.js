@@ -2,8 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { FlatList, View, Text, Dimensions, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SimpleGrid } from 'react-native-super-grid';
-import 'intl';
-import 'intl/locale-data/jsonp/vi';
+import { useTheme, List, Card, Divider } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import styles from './styles'
@@ -13,7 +12,7 @@ import DATA_URL from '../../url.js'
 let deviceWidth = Dimensions.get('window').width
 
 const Stvp = ({ classe, login, week }) => {
-console.log(classe)
+	const theme = useTheme();
 	const [vpmList, setVpmList] = useState(null);
 	const [ruleList, setRuleList] = useState(null);
 	const [signal, setSignal] = useState(false)
@@ -235,151 +234,190 @@ console.log(classe)
 
 	return (
 		<View style={{flex:1}}>
-		  <Text style={styles.header}>Danh sách vi phạm {classe} (Tuần {week.slice(2)})</Text>  
- 			<View style={styles.filterBox}>
- 				<Text style={styles.qsTxt}>Lọc theo: </Text>
- 				<Dropdown
- 					autoScroll={false}
-	        style={[styles.dropdown]}
-	        iconStyle={{height:30,width:30}}
-	        iconColor='black'
-	        activeColor='lightblue'
-	        data={days}
-	        maxHeight={250}
-	        labelField="item"
-	        valueField="id"
-	        placeholder={days[0].item}
-	        value={selectedDay}
-	        onChange={item => setSelectedDay(item)}
-	        itemContainerStyle={{borderWidth:0.5}}
-	      />	
-	      <Dropdown
- 					autoScroll={false}
-	        style={[styles.dropdown]}
-	        iconStyle={{height:30,width:30}}
-	        iconColor='black'
-	        activeColor='lightblue'
-	        data={type}
-	        maxHeight={250}
-	        labelField="item"
-	        valueField="id"
-	        placeholder={type[0].item}
-	        value={selectType}
-	        onChange={item => setSelectType(item)}
-	        itemContainerStyle={{borderWidth:0.5}}
-	      />
- 			</View>
- 			
- 			{selectType.id == 'D'
- 			? (
-					<FlatList
-						style={{
-							borderWidth:0.5,  	
-							shadowColor: '#000',
-					    shadowOffset: {
-					      width: 0,
-					      height: 1,
-					    },
-					    shadowOpacity: 0.2,
-					    shadowRadius: 1.41,
-					    elevation: 2,
-					  }}
-		        data={ViphamDay()}
-		        renderItem={({item, index}) => (	
-							<View style={{margin:5,flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-								{item.name_vp_id == null 
-								? (
-										<View style={{flex:1}}>
-											{item.bonus != 'Điểm sổ đầu bài'
-											? (												
-													<View style={styles.frame}>
-														<Text style={{fontSize:16, width:'65%'}}>{item.bonus}</Text>
-														<Text style={{fontSize:16}}>{item.quantity} điểm</Text>
-													</View>	
-												)
-											: (
-													<TouchableOpacity style={styles.frame}>
-														<Text style={{fontSize:16}}>{item.bonus}</Text>
-													</TouchableOpacity>	
-												)
-											}
-											<Text>Ngày tạo: {ConvertTime(item.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
-										</View>
-									)
-								:	(
-										<TouchableOpacity 
-											style={{flex:1}} 
-											onPress={()=>
-												{
-													if ((item.create_by == 'admin' || item.modified_by == 'admin') && login != 'admin') {
-														Alert.alert('Thông báo','Bạn không có quyền chỉnh sửa vi phạm này')
-													} else {
-														changeVpm(
-															{
-																id: item.name_vp_id?.name_vp_id, 
-																item: item.name_vp_id?.name_vp
-															}, 
-															item.quantity, 
-															item.name_student, 
-															{
-																vpm_id: item.vpm_id,
-																week_id: item.week_id,
-																class_id: item.class_id,
-																modified_by: login
-															},
-															{
-																id: item.day,
-																item: 'Thứ '+(item.day+1)	
-															}
+		<ScrollView>
+			<Card>
+				<Card.Title title={`Danh sách vi phạm ${classe}`} titleVariant='headlineMedium'
+					subtitle={`Tuần ${week.slice(2)}`} subtitleVariant='titleMedium'
+				/>
+			</Card>
+
+			<View style={{height:10}}/>
+
+			<Card>
+				<Card.Content>
+					<View style={[styles.filterBox, {backgroundColor: theme.colors.ownColorContainer}]}>
+	 					<Text style={styles.qsTxt}>Lọc theo: </Text>
+		 				<Dropdown
+		 					autoScroll={false}
+			        style={[styles.dropdown]}
+			        iconStyle={{height:30,width:30}}
+			        iconColor='black'
+			        activeColor='lightblue'
+			        data={days}
+			        maxHeight={250}
+			        labelField="item"
+			        valueField="id"
+			        placeholder={days[0].item}
+			        value={selectedDay}
+			        onChange={item => setSelectedDay(item)}
+			        itemContainerStyle={{borderWidth:0.5}}
+			      />	
+			      <Dropdown
+		 					autoScroll={false}
+			        style={[styles.dropdown]}
+			        iconStyle={{height:30,width:30}}
+			        iconColor='black'
+			        activeColor='lightblue'
+			        data={type}
+			        maxHeight={250}
+			        labelField="item"
+			        valueField="id"
+			        placeholder={type[0].item}
+			        value={selectType}
+			        onChange={item => setSelectType(item)}
+			        itemContainerStyle={{borderWidth:0.5}}
+			      />
+ 					</View>
+
+		 			{selectType.id == 'D'
+		 			? (
+							<FlatList
+								style={{
+									borderWidth:0.5,
+									borderRadius:10,  	
+									shadowColor: '#000',
+							    shadowOffset: {
+							      width: 0,
+							      height: 2,
+							    },
+							    shadowOpacity: 0.2,
+							    shadowRadius: 1.5,
+							    elevation: 2,
+							  }}
+				        data={ViphamDay()}
+				        renderItem={({item, index}) => (	
+									<View style={{margin:5,flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+										{item.name_vp_id == null 
+										? (
+												<View style={{flex:1}}>
+													{item.bonus != 'Điểm sổ đầu bài'
+													? (												
+															<View style={styles.frame}>
+																<Text style={{fontSize:16, width:'65%'}}>{item.bonus}</Text>
+																<Text style={{fontSize:16}}>{item.quantity} điểm</Text>
+															</View>	
+														)
+													: (
+															<TouchableOpacity style={styles.frame}>
+																<Text style={{fontSize:16}}>{item.bonus}</Text>
+															</TouchableOpacity>	
 														)
 													}
-												}
-											}
-										>
-											<View style={styles.frame}>
-												<Text style={{fontSize:16,width:'65%'}}>{item.name_vp_id?.name_vp}</Text>
-												<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
-											</View>
-											<Text>Ngày tạo: {ConvertTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>
-											{item.modified_by
-											&& (<Text>Được chỉnh sửa bởi: {item.modified_by.includes('sdl') ? 'Sao đỏ '+item.modified_by.slice(3) : item.modified_by}</Text>)
-											}
-											<Text>Danh sách hs vi phạm: {item.name_student}</Text>	
-										</TouchableOpacity>
-									)
-								}
+													<Text>Ngày tạo: {ConvertTime(item.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
+												</View>
+											)
+										:	(
+												<TouchableOpacity 
+													style={{flex:1}} 
+													onPress={()=>
+														{
+															if ((item.create_by == 'admin' || item.modified_by == 'admin') && login != 'admin') {
+																Alert.alert('Thông báo','Bạn không có quyền chỉnh sửa vi phạm này')
+															} else {
+																changeVpm(
+																	{
+																		id: item.name_vp_id?.name_vp_id, 
+																		item: item.name_vp_id?.name_vp
+																	}, 
+																	item.quantity, 
+																	item.name_student, 
+																	{
+																		vpm_id: item.vpm_id,
+																		week_id: item.week_id,
+																		class_id: item.class_id,
+																		modified_by: login
+																	},
+																	{
+																		id: item.day,
+																		item: 'Thứ '+(item.day+1)	
+																	}
+																)
+															}
+														}
+													}
+												>
+													<View style={styles.frame}>
+														<Text style={{fontSize:16,width:'65%'}}>{item.name_vp_id?.name_vp}</Text>
+														<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
+													</View>
+													<Text>Ngày tạo: {ConvertTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>
+													{item.modified_by
+													&& (<Text>Được chỉnh sửa bởi: {item.modified_by.includes('sdl') ? 'Sao đỏ '+item.modified_by.slice(3) : item.modified_by}</Text>)
+													}
+													<Text>Danh sách hs vi phạm: {item.name_student}</Text>	
+												</TouchableOpacity>
+											)
+										}
 
-								{item.bonus != 'Điểm sổ đầu bài'
-								&& (
-										<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox,{display:view}]}>
-											<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
-										</TouchableOpacity>	
-									 )
-								}
-							</View>								
-		        )
+										{item.bonus != 'Điểm sổ đầu bài'
+										&& (
+												<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox,{display:view}]}>
+													<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
+												</TouchableOpacity>	
+											 )
+										}
+									</View>								
+				        )
 
-		      	}
-		        keyExtractor={(item, idx) => item.vpm_id}
-		        ListFooterComponent={
-		      		<View style={{height:60}} />  	
-		        }
-		        ListEmptyComponent={
-		        	<View style={styles.itemBox}>
-								<Text>Chưa có vi phạm</Text>
-								<ActivityIndicator size="large" />
-							</View>	
-		        }
-		      />
- 				)
- 			: (
- 					<ScrollView style={{flex:1,backgroundColor:'white',borderRadius:30,padding:10,margin:10}}>
- 						<Text style={{fontSize:20,fontWeight:'500'}}>{noteList?.note}</Text>
- 						<View style={{height:50}} />
- 					</ScrollView>
- 				)
- 			}
+				      	}
+				        keyExtractor={(item, idx) => item.vpm_id}
+				        ListFooterComponent={
+				      		<View style={{height:60}} />  	
+				        }
+				        ListEmptyComponent={
+				        	<View style={styles.itemBox}>
+										<Text>Chưa có vi phạm</Text>
+										<ActivityIndicator size="large" />
+									</View>	
+				        }
+				      />
 
+		 					// <List.AccordionGroup>
+						  //   <List.Accordion title="Accordion 1" id="1">
+						  //     <List.Item title="Item 1" />
+						  //     <List.Item title="Item 1" />
+						  //   </List.Accordion>
+						  //   <List.Accordion title="Accordion 2" id="2">
+						  //   	<List.Item title="Item 1" />
+						  //     <List.Item title="Item 2" />
+						  //   </List.Accordion>
+						  //   <View>
+						  //     <Text>
+						  //       List.Accordion can be wrapped because implementation uses React.Context.
+						  //     </Text>
+						  //     <List.Accordion title="Accordion 3" id="3">
+						  //       <List.Item title="Item 3" />
+						  //       <List.Item title="Item 1" />
+						  //     </List.Accordion>
+						  //   </View>
+						  // </List.AccordionGroup>
+		 				)
+		 			: (
+		 					<ScrollView style={{flex:1,backgroundColor:'white',borderRadius:30,padding:10,margin:10}}>
+		 						<Text style={{fontSize:20,fontWeight:'500'}}>{noteList?.note}</Text>
+		 						<View style={{height:50}} />
+		 					</ScrollView>
+		 				)
+		 			}					
+				</Card.Content>
+			</Card>
+		</ScrollView>
+		  {/*<Text style={styles.header}>Danh sách vi phạm {classe} (Tuần {week.slice(2)})</Text>  */}
+ 			
+ 			
+
+
+   			
    		             		  
 		  <Form 
 		  	items={ConvertItem()} 

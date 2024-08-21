@@ -129,7 +129,7 @@ export default function DrawerContent(props) {
 		  							style={styles.imgBox} 
 		  							onPress={()=>navigation.navigate('UserScreen',{screen:'User',params:{login:login,loginIn4:userIn4}})}
 		  						>
-		  							<MaterialCommunityIcons name='account' size={40} color='white'/>
+		  							<MaterialCommunityIcons name={login.includes('sdl') ? 'account-star' : 'account-cog'} size={40} color='white'/>
 		  						</Pressable>
 		  						<Text style={styles.usrTxt}>{login.includes('sdl') ? 'Sao đỏ '+login.slice(3) : login}</Text>
 		  						<View style={{height:10}} />

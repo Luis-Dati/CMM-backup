@@ -23,7 +23,7 @@ let deviceWidth = Dimensions.get('window').width
 const Headder = ({ name }) => {
 	const navigation = useNavigation();
 	return (
-		<View style={{backgroundColor:'white',borderWidth:1}}>
+		<View style={{backgroundColor:'blue',borderWidth:1}}>
 			<View style={{height:45,width:'100%'}}></View>
 			<View style={{flexDirection:'row',alignItems:'center'}}>
 				<TouchableOpacity
@@ -33,7 +33,7 @@ const Headder = ({ name }) => {
 					<MaterialCommunityIcons name="menu" size={25} />
 				</TouchableOpacity>
 				<View style={{justifyContent:'center',width:'40%',alignItems:'center'}}>
-					<Text style={{fontWeight:'500',fontSize:21}}>{name}</Text>
+					<Text style={{fontWeight:'bold',fontSize:21}}>{name}</Text>
 				</View>	
 			</View>
 
@@ -44,16 +44,25 @@ const Headder = ({ name }) => {
 const HomeScreen = ({route, navigation }) => {
 	let { item }= route.params;
 	return (
-		<Stack.Navigator screenOptions={{headerTitleAlign:'center'}}>
+		<Stack.Navigator 
+			screenOptions={{
+				headerTitleAlign:'center',
+				headerStyle: {
+          backgroundColor: '#1FBFF4',
+        },
+        headerTitleStyle: {
+        	fontWeight: 'bold',
+        	color:'white',
+        },
+        headerTintColor: '#fff',
+		}}>
 			<Stack.Screen 
 				name="Home" component={Home} 
-				options={({navigation, route}) =>({
-					headerTitle: () => (
-						<Text style={{fontWeight:'500',fontSize:20}}>Trang chủ</Text>
-					),
+				options={({navigation, route}) =>({	
+					title: 'Trang chủ',
 					headerLeft: () => (
       			<TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-      				<MaterialCommunityIcons name='menu' size={25} color='black'/>	
+      				<MaterialCommunityIcons name='menu' size={25} color='#FFF'/>	
       			</TouchableOpacity>
     			)
 				})}
@@ -68,17 +77,26 @@ const HomeScreen = ({route, navigation }) => {
 const UserScreen = ({ navigation }) => {
 	
 	return (
-		<Stack.Navigator screenOptions={{headerTitleAlign:'center'}}>
+		<Stack.Navigator 
+			screenOptions={{
+				headerTitleAlign:'center',
+				headerStyle: {
+          backgroundColor: '#1FBFF4',
+        },
+        headerTitleStyle: {
+        	fontWeight: 'bold',
+        	color:'white',
+        },
+        headerTintColor: '#fff',
+		}}>
 			<Stack.Screen name="Empty" component={Empty}/>
 			<Stack.Screen 
 				name="User" component={User} 
 				options={({navigation, route}) =>({
-					headerTitle: () => (
-						<Text style={{fontWeight:'500',fontSize:20}}>Cá nhân</Text>
-					),
+					title: 'Cá nhân',
 					headerLeft: () => (
       			<TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-      				<MaterialCommunityIcons name='menu' size={25} color='black'/>	
+      				<MaterialCommunityIcons name='menu' size={25} color='#FFF'/>	
       			</TouchableOpacity>
     			)
 				})}
@@ -95,7 +113,7 @@ const UserScreen = ({ navigation }) => {
 const Empty = () => {
 	return (
 		<View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-			<Text>Phiên bản: 1.5.3</Text>
+			<Text>Phiên bản: 2.0.0</Text>
 			<Text>Bản quyền thuộc sở hữu của Lê Duy Đạt (313615)</Text>
 		</View>
 	)

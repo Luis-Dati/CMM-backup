@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, TextInput, ScrollView, Button, Modal, TouchableOpacity, Alert } from 'react-native'
 import SwitchSelector from "react-native-switch-selector";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { SimpleGrid } from 'react-native-super-grid';
 import { getDocumentAsync } from 'expo-document-picker';
-import XLSX from 'xlsx';
+import XLSX from 'xlsx-js-style';
 import { documentDirectory, readDirectoryAsync, readAsStringAsync, writeAsStringAsync, EncodingType } from 'expo-file-system';
+import { FAB, Portal, Avatar, DataTable, Card, Divider, PaperProvider } from 'react-native-paper';
 
 import styles from './styles';
 import DATA_URL from '../../url.js'
@@ -97,6 +97,10 @@ const Sxlt = ({ root, week }) => {
 	const [modal2, setModal2] = useState(false)
 	const [ltList, setLtList] = useState(null)
 	const [signal, setSignal] = useState(false)
+
+	const [state, setState] = React.useState({ open: false });
+  const onStateChange = ({ open }) => setState({ open });
+  const { open } = state
 
 	const [grade, setGrade] = useState(10)
 	const [grade2, setGrade2] = useState(10)
@@ -217,14 +221,14 @@ const Sxlt = ({ root, week }) => {
 	}
 	
 	return (
-		<View style={{flex:1}}>
+		<View>
 			<SwitchSelector
 				initial={0}
 				onPress={value => setGrade(value)}
-				textColor='blue'
+				textColor='#1FBFF4'
 				selectedColor='#fff'
-				buttonColor='blue'
-				borderColor='blue'
+				buttonColor='#1FBFF4'
+				borderColor='#1FBFF4'
 				hasPadding
 				options={options}
 				testID="gender-switch-selector"
@@ -234,80 +238,92 @@ const Sxlt = ({ root, week }) => {
 				<ShowCalen grade={grade} data={ltList}/>
 			</ScrollView>	
 
-					<View>
-						<View style={styles.toolBox}>
-							<Button title='Tạo mới thủ công' color='blue' onPress={()=>setModal2(true)} />	
-							<Text style={{margin:5}}>hoặc</Text>	
-							<Button title={'Chọn 1 file xlsx'} color='green' onPress={pickAndParse}/>
+			<Portal>
+        <FAB.Group
+          open={open}
+          visible
+          icon={open ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline'}
+          actions={[
+				    {
+				      icon: 'plus-circle',
+				      label: 'Tạo thủ công',
+				      onPress : () => setModal2(true)
+				    },
+				    { 
+				    	icon: 'file-excel', 
+				    	label: 'Tạo bằng Excel',
+				    	onPress: pickAndParse,
+				    }
+				  ]}
+          onStateChange={onStateChange}
+        />
+      </Portal>
+					
+			<Modal
+				animationType='fade'
+				transparent={false}
+				visible={modal}
+			>
+				<View style={{flex:1,padding:10,alignItems:'center'}}>
+					<TouchableOpacity style={{alignSelf:'flex-end',marginVertical:5}} onPress={()=>setModal(false)}>
+						<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
+					</TouchableOpacity>
+
+					<View style={{width:'50%',justifyContent:'space-evenly',height:'50%'}}>					
+							
+					</View>	
+				</View>
+
+			</Modal>
+
+			<Modal
+				animationType='fade'
+				transparent={true}
+				visible={modal2}
+			>
+				<View style={styles.entireView}>
+					<View style={styles.dialog}>
+						<TouchableOpacity style={{alignSelf:'flex-end',marginVertical:5}} onPress={()=>{setModal2(false);setFileData(null);setNewLt({})}}>
+							<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
+						</TouchableOpacity>
+						<View style={{backgroundColor:'#D0D0D0',marginBottom:10}}>
+							<Text style={styles.header}>Lịch trực mới</Text>
 						</View>
-						<Modal
-							animationType='fade'
-							transparent={false}
-							visible={modal}
-						>
-							<View style={{flex:1,padding:10,alignItems:'center'}}>
-								<TouchableOpacity style={{alignSelf:'flex-end',marginVertical:5}} onPress={()=>setModal(false)}>
-									<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
-								</TouchableOpacity>
-
-								<View style={{width:'50%',justifyContent:'space-evenly',height:'50%'}}>					
-										
-								</View>	
-							</View>
-
-						</Modal>
-
-						<Modal
-							animationType='fade'
-							transparent={true}
-							visible={modal2}
-						>
-							<View style={styles.entireView}>
-								<View style={styles.dialog}>
-									<TouchableOpacity style={{alignSelf:'flex-end',marginVertical:5}} onPress={()=>{setModal2(false);setFileData(null);setNewLt({})}}>
-										<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
-									</TouchableOpacity>
-									<View style={{backgroundColor:'#D0D0D0',marginBottom:10}}>
-										<Text style={styles.header}>Lịch trực mới</Text>
+						<SwitchSelector
+							initial={0}
+							onPress={value => setGrade2(value)}
+							textColor='#1FBFF4'
+							selectedColor='#fff'
+							buttonColor='#1FBFF4'
+							borderColor='#1FBFF4'
+							hasPadding
+							options={options}
+							testID="gender-switch-selector"
+							accessibilityLabel="gender-switch-selector"
+						/>
+						<ScrollView>
+						  
+							{fileData  
+							? (
+									<View>
+										<Text>Bản xem trước của tệp '{fileName}'</Text>
+										<ShowCalen grade={grade2} data={fileData}/>
 									</View>
-									<SwitchSelector
-										initial={0}
-										onPress={value => setGrade2(value)}
-										textColor='blue'
-										selectedColor='#fff'
-										buttonColor='blue'
-										borderColor='blue'
-										hasPadding
-										options={options}
-										testID="gender-switch-selector"
-										accessibilityLabel="gender-switch-selector"
-									/>
-									<ScrollView>
-									  
-										{fileData  
-										? (
-												<View>
-													<Text>Bản xem trước của tệp '{fileName}'</Text>
-													<ShowCalen grade={grade2} data={fileData}/>
-												</View>
-											)
-										: (
-												<ShowCalenHand grade={grade2} data={ltList} func={handleInputChange} newLt={newLt}/>
-											)
-										}
-									</ScrollView>	
-								</View>
-								<View style={{marginHorizontal:20,marginBottom:30}}>
-									<Button title='Hoàn thành' onPress={fileData ? () => handleComplete(fileData) : handleCompleteHand}/>
-								</View>
-							</View>
-
-						</Modal>
+								)
+							: (
+									<ShowCalenHand grade={grade2} data={ltList} func={handleInputChange} newLt={newLt}/>
+								)
+							}
+						</ScrollView>	
 					</View>
+					<View style={{marginHorizontal:20,marginBottom:30}}>
+						<Button title='Hoàn thành' onPress={fileData ? () => handleComplete(fileData) : handleCompleteHand}/>
+					</View>
+				</View>
 
+			</Modal>
 			
 		</View>
-		
 	)
 }
 

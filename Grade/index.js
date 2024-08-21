@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { ScrollView, TouchableOpacity, ImageBackground, View, Text, ActivityIndicator } from 'react-native'
 import { SimpleGrid } from 'react-native-super-grid';
+import { Surface, Card, Divider, useTheme } from 'react-native-paper';
+
 import styles from './styles'
 import { GradeShow } from '../User/Model/Xbxh';
-
 import DATA_URL from '../url.js'
 
 const Sunday = ({ navigation, grade, classList, week }) => {
@@ -43,6 +44,7 @@ const Sunday = ({ navigation, grade, classList, week }) => {
 }
 
 const Grade = ({ navigation, route }) => {
+	const theme = useTheme()
 	const { grade } = route.params;
 	const [classList, setClassList] = useState([])
 	const [week, setWeek] = useState(null)
@@ -89,7 +91,7 @@ const Grade = ({ navigation, route }) => {
 	}
 
 	return (
-		<ScrollView style={styles.image}>
+		<ScrollView style={styles.container}>
 			{classList.length != 0
 			?	(
 					<>
@@ -98,21 +100,24 @@ const Grade = ({ navigation, route }) => {
 								<Sunday navigation={navigation} grade={grade} classList={classList} week={week} onPress={onPress}/>
 							)
 						:	(									
-								<View>
-									<Text style={styles.mainText}>Chọn lớp của bạn</Text>			
-									<SimpleGrid
-									  itemDimension={130}
-									  data={classList.filter(obj=>obj.class_id.includes(grade.slice(5)))}
-									  style={styles.gridView}
-									  spacing={15}
-									  renderItem={({ item }) => (
-										<TouchableOpacity onPress={()=>onPress(item.class_id, item.class_name)} style={[styles.itemContainer, { backgroundColor: 'lightblue' }]}>
-										  <Text style={styles.itemName}>{item.class_name}</Text> 
-										</TouchableOpacity>
-									  )}
-									/>
-									<View style={{flex:0.1}}></View>
-								</View>
+								<Card>
+									<Card.Title titleVariant="headlineMedium" title="Chọn lớp của bạn" />
+									<Divider bold/>
+									<Card.Content>		
+										<SimpleGrid
+										  itemDimension={130}
+										  data={classList.filter(obj=>obj.class_id.includes(grade.slice(5)))}
+										  spacing={10}
+										  renderItem={({ item }) => (
+										  	<Surface style={{borderRadius:15,backgroundColor:theme.colors.ownColorContainer}} elevation={3}>
+										  		<TouchableOpacity onPress={()=>onPress(item.class_id, item.class_name)} style={[styles.itemContainer]}>
+													  <Text style={[styles.itemName,{color:theme.colors.lighterOwnColor}]}>{item.class_name}</Text> 
+													</TouchableOpacity>
+										  	</Surface>
+										  )}
+										/>	
+									</Card.Content>
+								</Card>
 							)
 						}
 					</>

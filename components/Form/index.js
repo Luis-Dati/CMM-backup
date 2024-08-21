@@ -4,6 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import NumericInput from 'react-native-numeric-input';
 import { SimpleGrid } from 'react-native-super-grid';
 import { Dropdown } from 'react-native-element-dropdown';
+import { FAB, Portal } from 'react-native-paper';
 
 import styles from './styles'
 let deviceWidth = Dimensions.get('window').width;
@@ -122,17 +123,24 @@ const Form = (props) => {
 		<View style={{backgroundColor:'transparent',borderRadius:10}}>
 			<View style={{position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center'}}>
 				<View style={{flexDirection:'row', alignItems:'center'}}>
-					<TouchableOpacity onPress={() => {setMv(true);props.setFnc('none')}}>
-						<MaterialCommunityIcons name='plus-circle' size={55} color='blue' />	
-					</TouchableOpacity>
-					<TouchableOpacity onPress={() => props.setFnc(props.view == 'flex' ? 'none' : 'flex')}> 
-						<MaterialCommunityIcons name='delete-circle' size={55} color='blue' />
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.handMBtn} onPress={()=>{setModalBns(true)}}> 
-						<Image source={require('../../assets/DiemB.png')} style={{width:45,height:45}} />
-					</TouchableOpacity>
+					{(props.role == "admin") || (props.role.includes('sdl'))
+					?  (
+							<View style={{flexDirection:'row', alignItems:'center'}}>
+								<TouchableOpacity onPress={() => {setMv(true);props.setFnc('none')}}>
+									<MaterialCommunityIcons name='plus-circle' size={55} color='blue' />	
+								</TouchableOpacity>
+								<TouchableOpacity onPress={() => props.setFnc(props.view == 'flex' ? 'none' : 'flex')}> 
+									<MaterialCommunityIcons name='delete-circle' size={55} color='blue' />
+								</TouchableOpacity>
+								<TouchableOpacity style={styles.handMBtn} onPress={()=>{setModalBns(true)}}> 
+									<Image source={require('../../assets/DiemB.png')} style={{width:43,height:43}} />
+								</TouchableOpacity>
+							</View>
+						)
+					:	(<View/>)				
+					}
 					<TouchableOpacity style={styles.handMBtn} onPress={()=>{setModalSDB(true)}}>
-						<Image source={require('../../assets/DiemSDB.png')} style={{width:45,height:45}} />
+						<Image source={require('../../assets/DiemSDB.png')} style={{width:43,height:43}} />
 					</TouchableOpacity> 
 					
 				</View>
@@ -151,21 +159,21 @@ const Form = (props) => {
 							</TouchableOpacity>
 
 							<View style={[styles.boxName]}>
-								<Text style={[styles.qsTxt,{marginRight:10}]}>Chọn ngày vi phạm</Text>
-				 				<Dropdown
-				 					autoScroll={false}
-					        style={[styles.dropdown,{flex:1}]}
-					        iconStyle={{height:30,width:30}}
-					        activeColor='lightblue'
-					        data={days}
-					        maxHeight={150}
-					        labelField="item"
-					        valueField="id"
-					        placeholder={days[0].item}
-					        value={selectedDay}
-					        onChange={item => setSelectedDay(item)}
-					        itemContainerStyle={{borderWidth:0.5}}
-					      />	
+								<Text style={[styles.qsTxt,{marginRight:20}]}>Ngày vi phạm</Text>
+								<Dropdown
+									autoScroll={false}
+									style={[styles.dropdown,{flex:1}]}
+									iconStyle={{height:30,width:30}}
+									activeColor='lightblue'
+									data={days}
+									maxHeight={150}
+									labelField="item"
+									valueField="id"
+									placeholder={days[0].item}
+									value={selectedDay}
+									onChange={item => setSelectedDay(item)}
+									itemContainerStyle={{borderWidth:0.5}}
+								/>	
 							</View>
 
 							<View style={styles.boxName}>
@@ -309,41 +317,41 @@ const Form = (props) => {
 							<View>
 								<View style={[styles.inputBox]}>
 									<Text style={styles.labelinput}>Chọn ngày vi phạm</Text>
-					 				<Dropdown
-					 					autoScroll={false}
-						        style={[styles.dropdown]}
-						        iconStyle={{height:30,width:30}}
-						        activeColor='lightblue'
-						        data={days}
-						        maxHeight={150}
-						        labelField="item"
-						        valueField="id"
-						        placeholder={days[0].item}
-						        value={selectedDay}
-						        onChange={item => setSelectedDay(item)}
-						        itemContainerStyle={{borderWidth:0.5}}
-						      />	
+									<Dropdown
+										autoScroll={false}
+										style={[styles.dropdown]}
+										iconStyle={{height:30,width:30}}
+										activeColor='lightblue'
+										data={days}
+										maxHeight={150}
+										labelField="item"
+										valueField="id"
+										placeholder={days[0].item}
+										value={selectedDay}
+										onChange={item => setSelectedDay(item)}
+										itemContainerStyle={{borderWidth:0.5}}
+									/>	
 								</View>
 
 								<View style={styles.inputBox}>
 									<Text style={[styles.labelinput]}>
-				            Nhập loại vi phạm
-				          </Text>
+										Nhập loại vi phạm
+									</Text>
 									<Dropdown
-					          style={[styles.dropdown]}
-					          iconStyle={{height:30,width:30}}
-					          data={props.items ? props.items : []}
-					          search
-					          activeColor='lightblue'
-					          maxHeight={250}
-					          labelField="item"
-					          valueField="id"
-					          placeholder={selectedItem ? selectedItem.item : 'Chọn 1 vi phạm'}
-					          searchPlaceholder="Tìm kiếm..."
-					          value={selectedItem}
-					          onChange={item => setSelectedItem(item)}
-					          itemContainerStyle={{borderWidth:0.5}}
-					        />
+										style={[styles.dropdown]}
+										iconStyle={{height:30,width:30}}
+										data={props.items ? props.items : []}
+										search
+										activeColor='lightblue'
+										maxHeight={250}
+										labelField="item"
+										valueField="id"
+										placeholder={selectedItem ? selectedItem.item : 'Chọn 1 vi phạm'}
+										searchPlaceholder="Tìm kiếm..."
+										value={selectedItem}
+										onChange={item => setSelectedItem(item)}
+										itemContainerStyle={{borderWidth:0.5}}
+									/>
 								</View>
 																	
 								<View style={styles.inputBox}>
@@ -411,40 +419,40 @@ const Form = (props) => {
 							<View>
 								<View style={[styles.inputBox]}>
 									<Text style={styles.labelinput}>Chọn ngày vi phạm</Text>
-					 				<Dropdown
-					 					autoScroll={false}
-						        style={[styles.dropdown]}
-						        iconStyle={{height:30,width:30}}
-						        activeColor='lightblue'
-						        data={days}
-						        maxHeight={150}
-						        labelField="item"
-						        valueField="id"
-						        placeholder={props.changeDay ? props.changeDay.item : days[new Date().getDay()].item}
-						        value={props.changeDay}
-						        onChange={item => props.setChangeDay(item)}
-						        itemContainerStyle={{borderWidth:0.5}}
-						      />	
+									<Dropdown
+										autoScroll={false}
+										style={[styles.dropdown]}
+										iconStyle={{height:30,width:30}}
+										activeColor='lightblue'
+										data={days}
+										maxHeight={150}
+										labelField="item"
+										valueField="id"
+										placeholder={props.changeDay ? props.changeDay.item : days[new Date().getDay()].item}
+										value={props.changeDay}
+										onChange={item => props.setChangeDay(item)}
+										itemContainerStyle={{borderWidth:0.5}}
+									/>	
 								</View>
 
 								<View style={styles.inputBox}>
 									<Text style={[styles.labelinput]}>
-				            Nhập loại vi phạm
-				          </Text>
+										Nhập loại vi phạm
+									</Text>
 									<Dropdown
-					          style={[styles.dropdown]}
-					          iconStyle={{height:30,width:30}}
-					          data={props.items ? props.items : []}
-					          search
-					          maxHeight={250}
-					          labelField="item"
-					          valueField="id"
-					          placeholder={props.changeType ? props.changeType.item : 'Chọn 1 vi phạm'}
-					          searchPlaceholder="Tìm kiếm..."
-					          value={props.changeType}
-					          onChange={item => props.setChangeType(item)}
-					          itemContainerStyle={{borderWidth:0.5}}
-					        />
+										style={[styles.dropdown]}
+										iconStyle={{height:30,width:30}}
+										data={props.items ? props.items : []}
+										search
+										maxHeight={250}
+										labelField="item"
+										valueField="id"
+										placeholder={props.changeType ? props.changeType.item : 'Chọn 1 vi phạm'}
+										searchPlaceholder="Tìm kiếm..."
+										value={props.changeType}
+										onChange={item => props.setChangeType(item)}
+										itemContainerStyle={{borderWidth:0.5}}
+									/>
 								</View>
 																	
 								<View style={styles.inputBox}>
@@ -456,7 +464,6 @@ const Form = (props) => {
 												let clone = JSON.parse(JSON.stringify(props.changeLst));	
 												delete clone[String(value)]	
 												props.setChangeLst(clone)
-												console.log(props.changeLst)
 											}
 											props.setChangeNum(value)
 
