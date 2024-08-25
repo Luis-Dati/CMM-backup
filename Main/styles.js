@@ -2,8 +2,8 @@ import { StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding:10,
+    backgroundColor: '#fff',
   },
   header:{
     fontSize:27,
@@ -25,10 +25,13 @@ const styles = StyleSheet.create({
     borderRadius:20,
     flex:1,
   },
-  gridTxt2:{
+  gridTxtQs:{
+    fontSize:16,
+    fontWeight:'500',
     borderWidth:1,
     textAlign:'center',
     padding:5,
+    flex: 1,
   },
   entireView:{
     backgroundColor:'#000000aa',
@@ -43,17 +46,14 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderWidth: 0.5,
     borderRadius: 8,
-    paddingHorizontal: 8,
-    width:100,
+    paddingHorizontal: 5,
   },
-  filterBox:{
-    backgroundColor:'white', 
-    width: 200,
-    marginHorizontal:10, 
+  filterBox:{  
     flexDirection:'row', 
     alignItems:'center', 
     justifyContent:'space-evenly',
     shadowColor: '#000',
+    borderRadius: 10,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
-    marginBottom: 10
+    width:'100%',
   },
 })
 

@@ -25,6 +25,7 @@
     "expo-media-library": "~15.4.1",
     "expo-sharing": "~11.5.0",
     "expo-status-bar": "~1.6.0",
+    "expo-updates": "~0.18.19",
     "intl": "^1.2.5",
     "react": "18.2.0",
     "react-native": "0.72.10",

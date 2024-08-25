@@ -4,7 +4,7 @@ import { Pressable, Dimensions, Animated, ImageBackground, Image, TouchableOpaci
 import { SimpleGrid } from 'react-native-super-grid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SwitchSelector from "react-native-switch-selector";
-import { Card, Avatar, Divider, DataTable, Surface } from 'react-native-paper';
+import { useTheme, Card, Avatar, Divider, DataTable, Surface } from 'react-native-paper';
 
 import { ConvertTime, FormatDate } from '../toolkit.js';
 import { ShowCalen } from '../User/Model/Sxlt'
@@ -70,6 +70,7 @@ const SchoolLevel = ({ level }) => {
 var item;
 
 const Home = ({ route, navigation }) => {
+	const theme = useTheme();
 	const [school, setSchool] = useState()
 	const [ltList, setLtList] = useState(null)
 	const [week, setWeek] = useState(null)
@@ -143,7 +144,7 @@ const Home = ({ route, navigation }) => {
 				scrollEventThrottle={16}
 				contentContainerStyle={{margin:10}}
 			>  
-					<Card>
+					<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 						<Card.Title title='Các khối học' titleVariant='titleLarge' />
 						<Card.Content style={{flexDirection:'row',justifyContent:'space-between'}}>
 							{/*<SchoolLevel level={school}/>*/}
@@ -153,19 +154,19 @@ const Home = ({ route, navigation }) => {
 								onLayout={(event) => setCellWidth(event.nativeEvent.layout.width)}
 								>
 								<Pressable onPress={()=>navigation.push('Grade',{grade:'Khối 10'})}>
-									<Image source={require('../assets/10.png')} style={{height:cellWidth,width:cellWidth,borderRadius:10}} blurRadius={5}/>
+									<Image source={require('../assets/10.png')} style={{height:cellWidth,width:cellWidth,borderRadius:10}} blurRadius={1}/>
 								</Pressable>
 							</Surface>
 
 							<Surface style={[styles.surfaces,{height: cellWidth}]} elevation={3}>
 								<Pressable onPress={()=>navigation.push('Grade',{grade:'Khối 11'})}>
-									<Image source={require('../assets/11.png')} style={{height:cellWidth,width:cellWidth,borderRadius:10}} blurRadius={5}/>
+									<Image source={require('../assets/11.png')} style={{height:cellWidth,width:cellWidth,borderRadius:10}} blurRadius={1}/>
 								</Pressable>
 							</Surface>
 
 							<Surface style={[styles.surfaces,{height: cellWidth}]} elevation={3}>
 								  <Pressable onPress={()=>navigation.push('Grade',{grade:'Khối 12'})}>
-									<Image source={require('../assets/12.png')} style={{height:cellWidth,width:cellWidth,borderRadius:10}} blurRadius={5}/>
+									<Image source={require('../assets/12.png')} style={{height:cellWidth,width:cellWidth,borderRadius:10}} blurRadius={1}/>
 								</Pressable>
 							</Surface>
 
@@ -174,7 +175,7 @@ const Home = ({ route, navigation }) => {
 
 					<View style={{height:10}}/>
 					
-					<Card>
+					<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 						<Card.Title 
 							title={`Lịch trực ${week ? week.week_name : '...'}`} 
 							titleVariant='titleLarge' 

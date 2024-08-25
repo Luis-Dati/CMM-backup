@@ -23,7 +23,7 @@ const User = ({route, navigation}) => {
 	const [classList, setClassList] = useState(null)
 	const [week, setWeek] = useState(null)
 	const [weekList, setWeekList] = useState(null)
-	const [selectedWeek, setSelectedWeek] = useState(null)
+	const [selectedWeek, setSelectedWeek] = useState("...")
 	const [classPassive, setClassPassive] = useState(null)
 	const [signal, setSignal] = useState(false)
 	const [staticWidth, setStaticWidth] = useState(0)
@@ -96,125 +96,23 @@ const User = ({route, navigation}) => {
 		}; 
 		if ((week && classPassive) || (login == 'admin')) {
 			navigation.navigate('Model',{login:login,type:text,week:week,classe:classPassive})	
-		}					
-
+		}								
 	}
 	
-// 	const ModelXepHang = () => {
-// 		const [week, setWeek] = useState(1)
-// 		const [choice, setChoice] = useState('w')
-// 		let monthRank = []
-
-// 		if (weekList) {
-// 			weekList.map((item, idx)=>{
-// 				if ((idx+1)%4 == 0) {
-// 					monthRank.push({
-// 						monthId:'Tháng ' + ((idx+1) / 4),
-// 						monthStart:weekList[idx-3].week_name,
-// 						monthEnd:weekList[idx].week_name
-// 					})
-// 				}
-// 			})
-// 		}
-
-// 		return (
-		 
-// 			<Modal
-// 				animationType='fade'
-// 				transparent={true}
-// 				visible={modalXh}
-// 			>
-// 			<PaperProvider> 
-// 				<View style={styles.entireView2}>
-// 					<View style={styles.dialog2}>
-// 						<TouchableOpacity 
-// 							onPress={()=>setModalXh(false)} 
-// 							style={{alignSelf:'flex-end',margin:0}}
-// 						>
-// 							<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
-// 						</TouchableOpacity>
-// 						<View>
-// 							<Text style={styles.header}>Bạn muốn xem bảng xếp hạng theo:</Text>
-// 						</View>
-
-// {/*						<SegmentedButtons
-// 							value={choice}
-// 							onValueChange={setChoice}
-// 							density='small'
-// 							buttons={[
-// 								{
-// 									value: 'w',
-// 									label: 'Tuần',
-// 									showSelectedCheck:true,
-// 									checkedColor:'blue',
-// 									style:{backgroundColor:'white'},									
-// 								},
-// 								{
-// 									value: 'm',
-// 									label: 'Tháng',
-// 									showSelectedCheck:true,
-// 									checkedColor:'blue',
-// 									style:{backgroundColor:'white'},	
-// 									disabled:true								
-// 								},
-// 								{ value: 'hk', 
-// 									label: 'Học kì', 
-// 									showSelectedCheck:true,
-// 									checkedColor:'blue',
-// 									style:{backgroundColor:'white'},
-// 									disabled:true
-// 								},
-// 							]}
-// 						/>*/}
-					
-// 						<ScrollView 
-// 							showsVerticalScrollIndicator={false}
-// 							contentContainerStyle={{marginTop:5,alignItems:'center',display:(choice == 'm' ? 'flex' : 'none')}}>
-// 								{monthRank.length != 0
-// 								&&  (
-// 											// <SimpleGrid
-// 											//   data={monthRank}
-// 											//   itemDimension={}
-// 											//   spacing={10}
-// 											//   renderItem={({item, index}) => 
-// 											//   	<Button color='blue' title={`${item.monthId}: từ ${item.monthStart} đến ${item.monthEnd}`} onPress={()=>{
-// 											// 				setMwk(false);
-// 											// 				navigation.navigate('Model',{login:login,type:typefnc,week:item.week_id,weekin4:item})
-// 											// 			}}
-// 											// 		/>
-// 											// 	}
-// 											// />
-
-// 											// <FlatList
-// 											//   data={monthRank}
-// 											//   renderItem={({item}) => (
-// 											//   	<Button color='blue' title={`${item.monthId}: từ ${item.monthStart} đến ${item.monthEnd}`}/>
-// 											//   )}
-// 											//   keyExtractor={item => item.monthId}
-// 											// />
-
-// 											monthRank.map(item => (
-// 												<View style={{margin:5}}>
-// 													<Button 
-// 														color='blue' title={`${item.monthId}: từ ${item.monthStart} đến ${item.monthEnd}`}
-// 														onPress={()=>{
-// 															setModalXh(false)
-// 														}}
-// 													/>
-// 												</View>					      				
-// 											))
-// 										)
-// 								}
-// 						</ScrollView>
-// 					</View>
-// 				</View>
-// 			</PaperProvider>
-// 			</Modal>
-		
-// 		)
-// 	}
-
 	const ModelWeek = () => {
+
+		const handleNavigate = () => {
+			if(selectedWeek != "..."){
+				setMwk(false);
+				navigation.navigate('Model',{
+					login:login,
+					loginIn4:loginIn4,
+					type:typefnc,
+					week:selectedWeek.week_id,
+					weekin4:selectedWeek,
+				})
+			}
+		}
 
 		return (
 			<Modal
@@ -223,42 +121,33 @@ const User = ({route, navigation}) => {
 				visible={modalWk}
 			> 
 				<View style={[styles.entireView2,{justifyContent:'center',alignItems:'center'}]}>
-					<Card>
+					<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 						<Card.Title title='Hãy chọn 1 tuần' titleVariant='titleLarge'/>
 						<Card.Content>
 						{weekList 
 						? (
 							<Dropdown
-			 					autoScroll={false}
-				        style={[styles.dropdown]}
-				        iconStyle={{height:30,width:30}}
-				        iconColor='black'
-				        activeColor='lightblue'
-				        data={weekList}
-				        maxHeight={250}
-				        labelField="week_name"
-				        valueField="week_id"
-				        placeholder={weekList[0]?.week_name}
-				        value={selectedWeek}
-				        onChange={item => setSelectedWeek(item)}
-				        itemContainerStyle={{borderWidth:0.5}}
-				      />	
+								autoScroll={false}
+								style={[styles.dropdown]}
+								iconStyle={{height:30,width:30}}
+								iconColor='black'
+								activeColor='lightblue'
+								data={weekList}
+								maxHeight={250}
+								labelField="week_name"
+								valueField="week_id"
+								placeholder={"..."}
+								value={selectedWeek}
+								onChange={item => setSelectedWeek(item)}
+								itemContainerStyle={{borderWidth:0.5}}
+							/>	
 						)
 						: (<View><Text>Đang chờ...</Text></View>)
 						}	
 							
 						</Card.Content>
 						<Card.Actions>
-							<Button mode='contained' buttonColor='#0288d1' onPress={() => {
-			        	setMwk(false);
-								navigation.navigate('Model',{
-										login:login,
-										loginIn4:loginIn4,
-										type:typefnc,
-										week:selectedWeek.week_id,
-										weekin4:selectedWeek
-									})
-			        }}>OK</Button>
+							<Button mode='contained' buttonColor='#0288d1' onPress={handleNavigate}>OK</Button>
 							<Button mode='outlined' buttonColor='rgb(255, 218, 214)' onPress={()=>setMwk(false)}>Huỷ</Button>
 						</Card.Actions>
 					</Card>
@@ -301,7 +190,8 @@ const User = ({route, navigation}) => {
 	}
 
 	const Model = () => {
-		const [week, setWeek] = useState(1)
+		const [week, setWeek] = useState(1);
+		const [widthGrid, setWidthGrid] = useState(0);
 		let lst = null;
 		if (classList) {
 
@@ -349,14 +239,17 @@ const User = ({route, navigation}) => {
 							{lst
 							?	(
 									<SectionGrid
-										itemDimension={100}
+										onLayout={(event) => {
+										  setWidthGrid(event.nativeEvent.layout.width);
+										}}
+										itemDimension={widthGrid / 3}
 										sections={lst}
 										keyExtractor={(item, index) => item + index}
-										renderItem={({item, index}) => ( 	
-											<Button mode='elevated' onPress={()=>{
-													setMv(false);
-													navigation.navigate('Model',{login:login,type:typefnc,classe:item,week:'wk'+('00'+week).slice(-2)})
-												}}
+										renderItem={({item, index}) => (
+											<Button labelStyle={{fontSize:16}} mode={widthGrid != 0 ? 'elevated' : 'text'} textColor={widthGrid != 0 ? theme.colors.ownColor : '#fff'} buttonColor={widthGrid != 0 ? theme.colors.lighterOwnColorContainer : '#fff'} onPress={()=>{
+												setMv(false);
+												navigation.navigate('Model',{login:login,type:typefnc,classe:item,week:'wk'+('00'+week).slice(-2)})
+											}}
 											>Lớp {item}</Button>
 										)}
 										renderSectionHeader={({section: {grade}}) => (
@@ -378,21 +271,21 @@ const User = ({route, navigation}) => {
 	}
 
 	const customLabel = val => {
-    return (
-        <View style={{width: 100, marginLeft: 30}}>
-            <Text style={{color: 'black', fontWeight: 'bold'}}>{val}</Text>
-        </View>
-    );
+		return (
+				<View style={{width: 100, marginLeft: 30}}>
+						<Text style={{color: 'black', fontWeight: 'bold'}}>{val}</Text>
+				</View>
+		);
 	};
 
 	const lineData = [
-      {value: 0, dataPointText: '0', labelComponent: () => customLabel('Thứ 2'),},
-      {value: 20, dataPointText: '20', labelComponent: () => customLabel('Thứ 3'),},
-      {value: 18, dataPointText: '18', labelComponent: () => customLabel('Thứ 4'),},
-      {value: 40, dataPointText: '40', labelComponent: () => customLabel('Thứ 5'),},
-      {value: 36, dataPointText: '36', labelComponent: () => customLabel('Thứ 6'),},
-      {value: 60, dataPointText: '60', labelComponent: () => customLabel('Thứ 7'),},
-  ];
+			{value: 0, dataPointText: '0', labelComponent: () => customLabel('Thứ 2'),},
+			{value: 20, dataPointText: '20', labelComponent: () => customLabel('Thứ 3'),},
+			{value: 18, dataPointText: '18', labelComponent: () => customLabel('Thứ 4'),},
+			{value: 40, dataPointText: '40', labelComponent: () => customLabel('Thứ 5'),},
+			{value: 36, dataPointText: '36', labelComponent: () => customLabel('Thứ 6'),},
+			{value: 60, dataPointText: '60', labelComponent: () => customLabel('Thứ 7'),},
+	];
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -407,7 +300,7 @@ const User = ({route, navigation}) => {
 
 				<View style={{height:15}} />
 
-				<Card>
+				<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 					<Card.Title 
 						title='Ứng dụng của tôi' titleVariant='titleLarge' 
 						left={(props) => <Avatar.Icon theme={ {colors: {primary: "#fff"}}} {...props} color={'#1FBFF4'} icon='view-grid-outline' />}
@@ -489,7 +382,7 @@ const User = ({route, navigation}) => {
 
 				<View style={{height:15}} />
 
-				<Card>
+				{/*<Card>
 					<Card.Title 
 						title='Số liệu thống kê hiện tại' titleVariant='titleLarge'
 						left={(props) => <Avatar.Icon theme={ {colors: {primary: "#fff"}}} {...props} color={'#1FBFF4'} icon='google-analytics' />}
@@ -499,23 +392,24 @@ const User = ({route, navigation}) => {
 
 						<LineChart
 							isAnimated
-              initialSpacing={0}
-              data={lineData}
-             	rulesColor="gray"
-            	rulesType="solid"             
-              textColor1="yellow"
-              textShiftY={-8}
-              textShiftX={-10}
-              textFontSize={13}
-              thickness={5}
-              noOfSections={5}
-              yAxisColor="#0BA5A4"
-              spacing={60}
-              xAxisColor="#0BA5A4"
-              color="#0BA5A4"
-	          />
+							initialSpacing={0}
+							data={lineData}
+							rulesColor="gray"
+							rulesType="solid"             
+							textColor1="yellow"
+							textShiftY={-8}
+							textShiftX={-10}
+							textFontSize={13}
+							thickness={5}
+							noOfSections={5}
+							yAxisColor="#0BA5A4"
+							spacing={60}
+							xAxisColor="#0BA5A4"
+							color="#0BA5A4"
+							showVerticalLines
+						/>
 					</Card.Content>
-				</Card>
+				</Card>*/}
 
 				<Model />
 				<ModelWeek />

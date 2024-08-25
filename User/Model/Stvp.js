@@ -8,6 +8,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import styles from './styles'
 import Form from '../../components/Form/index'
 import DATA_URL from '../../url.js'
+import { CombineConvert } from '../../toolkit.js'
 
 let deviceWidth = Dimensions.get('window').width
 
@@ -126,8 +127,18 @@ const Stvp = ({ classe, login, week }) => {
   	CreateData()
   }, [signal])
 
-	const handleAdd = async (item) => {
+ 	const optChange = (item, opt) => {
+		return {
+			method:"PUT",
+			headers: {
+				'Accept': 'application/json',
+				"Content-Type":"application/json",
+			},
+			body: JSON.stringify({...item, change: opt})
+		}
+	}
 
+	const handleAdd = async (item) => {
 		let option={
 			method:"POST",
 			headers: {
@@ -136,19 +147,20 @@ const Stvp = ({ classe, login, week }) => {
 			},
 			body: JSON.stringify(item)
 		};
-		await fetch(DATA_URL+'vipham',option)
-			.then((res)=>{
-				if (res.ok) {
-					Alert.alert('Thông báo','Thêm thành công',[
-						{text:'Ok',onPress:() => setSignal(item)}
-					])
-				}
-			})
-			.catch((res)=>Alert.alert('Thêm thất bại'))
+
+		const response = await fetch(DATA_URL+'vipham', option);
+		const responseInc = await fetch(DATA_URL+'statisticOnDay', optChange(item, 'inc'));
+		
+		if (response.status === 200 && responseInc.status === 200) {
+	    Alert.alert('Thông báo', 'Thêm thành công',[
+    		{text:'Ok',onPress:() => setSignal(item)}
+    	])
+	  } else {
+	    Alert.alert('Thêm thất bại');
+	  }	
 	}
 
 	const handleChange = async (item) => {
-
 		let option={
 			method:"PUT",
 			headers: {
@@ -157,16 +169,16 @@ const Stvp = ({ classe, login, week }) => {
 			},
 			body: JSON.stringify(item)
 		};
+		
+		const response = await fetch(DATA_URL+'vipham', option);
+		if (response.status === 200) {
+	    Alert.alert('Thông báo', 'Chỉnh sửa thành công',[
+    		{text:'Ok',onPress:() => setSignal(item)}
+    	])
+	  } else {
+	    Alert.alert('Chỉnh sửa thất bại');
+	  }	
 
-		await fetch(DATA_URL+'vipham',option)
-			.then((res)=>{
-				if (res.ok) {
-					Alert.alert('Thông báo','Chỉnh sửa thành công',[
-						{text:'Ok',onPress:() => setSignal(item)}
-					])
-				}
-			})
-			.catch((res)=>Alert.alert('Chỉnh sửa thất bại'))
 	}
 
 	const handleDel = async (item,index) => {
@@ -174,45 +186,19 @@ const Stvp = ({ classe, login, week }) => {
 			Alert.alert('Thông báo','Bạn không có quyền xóa vi phạm này')
 			return
 		}
-		let option={
-			method:"DELETE",
-		};
-		await fetch(DATA_URL+'vipham/'+item.vpm_id,option)
-			.then((res)=>{
-				if (res.ok) {
-					Alert.alert('Thông báo','Xóa thành công',[
-						{text:'Ok',onPress:() => setSignal(item)}
-					])
-				}
-			})
-			.catch((res)=>Alert.alert('Xóa thất bại'))
-	}
+		let option = { method:"DELETE" };
+		
+		const response = await fetch(DATA_URL+'vipham/'+item.vpm_id, option)
+		const responseDec = await fetch(DATA_URL+'statisticOnDay', optChange(item, 'dec'));
+		
+		if (response.status === 200 && responseDec.status === 200) {
+	    Alert.alert('Thông báo', 'Xoá thành công',[
+    		{text:'Ok',onPress:() => setSignal(item)}
+    	])
+	  } else {
+	    Alert.alert('Xoá thất bại');
+	  }
 
-	function ConvertTime(item){
-		const currentTime = new Date(item);
-
-		const formatter = new Intl.DateTimeFormat('vi-VN', {
-		  weekday: 'long',     // Ngày trong tuần, ví dụ: Thứ Hai
-		  year: 'numeric',     // Năm, ví dụ: 2023
-		  month: 'long',       // Tháng, ví dụ: Tháng Tám
-		  day: 'numeric',      // Ngày trong tháng, ví dụ: 2
-		  hour: 'numeric',     // Giờ, ví dụ: 14
-		  minute: 'numeric',   // Phút, ví dụ: 30
-		  second: 'numeric',   // Giây, ví dụ: 45'
-		});
-
-		// Lấy offset (độ lệch) múi giờ của máy tính địa phương so với UTC
-		const localOffset = currentTime.getTimezoneOffset();
-
-		// Tính toán offset (độ lệch) múi giờ từ GMT+0 đến GMT+7 (7 * 60 phút)
-		const offsetGMT7 = 7 * 60;
-
-		// Tính toán timestamp mới cho thời gian theo múi giờ GMT+7
-		const timestampGMT7 = currentTime.getTime() + localOffset * 60 * 1000 + offsetGMT7 * 60 * 1000;
-
-		// Tạo một đối tượng Date mới từ timestamp đã tính toán
-		const date = new Date(timestampGMT7);
-		return formatter.format(date);
 	}
 	
 	function ConvertItem() {
@@ -234,8 +220,8 @@ const Stvp = ({ classe, login, week }) => {
 
 	return (
 		<View style={{flex:1}}>
-		<ScrollView>
-			<Card>
+		<ScrollView stickyHeaderIndices={[2]}>
+			<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 				<Card.Title title={`Danh sách vi phạm ${classe}`} titleVariant='headlineMedium'
 					subtitle={`Tuần ${week.slice(2)}`} subtitleVariant='titleMedium'
 				/>
@@ -243,182 +229,152 @@ const Stvp = ({ classe, login, week }) => {
 
 			<View style={{height:10}}/>
 
-			<Card>
-				<Card.Content>
-					<View style={[styles.filterBox, {backgroundColor: theme.colors.ownColorContainer}]}>
-	 					<Text style={styles.qsTxt}>Lọc theo: </Text>
-		 				<Dropdown
-		 					autoScroll={false}
-			        style={[styles.dropdown]}
-			        iconStyle={{height:30,width:30}}
-			        iconColor='black'
-			        activeColor='lightblue'
-			        data={days}
-			        maxHeight={250}
-			        labelField="item"
-			        valueField="id"
-			        placeholder={days[0].item}
-			        value={selectedDay}
-			        onChange={item => setSelectedDay(item)}
-			        itemContainerStyle={{borderWidth:0.5}}
-			      />	
-			      <Dropdown
-		 					autoScroll={false}
-			        style={[styles.dropdown]}
-			        iconStyle={{height:30,width:30}}
-			        iconColor='black'
-			        activeColor='lightblue'
-			        data={type}
-			        maxHeight={250}
-			        labelField="item"
-			        valueField="id"
-			        placeholder={type[0].item}
-			        value={selectType}
-			        onChange={item => setSelectType(item)}
-			        itemContainerStyle={{borderWidth:0.5}}
-			      />
- 					</View>
+			<View>	
+				<View style={[styles.filterBox, {backgroundColor: theme.colors.ownColorContainer}]}>
+					<Text style={styles.qsTxt}>Lọc theo: </Text>
+	 				<Dropdown
+	 					autoScroll={false}
+		        style={[styles.dropdown, {width: 100}]}
+		        iconStyle={{height:30,width:30}}
+		        iconColor='black'
+		        activeColor='lightblue'
+		        data={days}
+		        maxHeight={250}
+		        labelField="item"
+		        valueField="id"
+		        placeholder={days[0].item}
+		        value={selectedDay}
+		        onChange={item => setSelectedDay(item)}
+		        itemContainerStyle={{borderWidth:0.5}}
+		      />	
+		      <Dropdown
+	 					autoScroll={false}
+		        style={[styles.dropdown, {width: 120}]}
+		        iconStyle={{height:30,width:30}}
+		        iconColor='black'
+		        activeColor='lightblue'
+		        data={type}
+		        maxHeight={250}
+		        labelField="item"
+		        valueField="id"
+		        placeholder={type[0].item}
+		        value={selectType}
+		        onChange={item => setSelectType(item)}
+		        itemContainerStyle={{borderWidth:0.5}}
+		      />
+				</View>
+			</View>
+ 		
+	 		<View style={{height:10}}/>
 
-		 			{selectType.id == 'D'
-		 			? (
-							<FlatList
-								style={{
-									borderWidth:0.5,
-									borderRadius:10,  	
-									shadowColor: '#000',
-							    shadowOffset: {
-							      width: 0,
-							      height: 2,
-							    },
-							    shadowOpacity: 0.2,
-							    shadowRadius: 1.5,
-							    elevation: 2,
-							  }}
-				        data={ViphamDay()}
-				        renderItem={({item, index}) => (	
-									<View style={{margin:5,flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-										{item.name_vp_id == null 
-										? (
-												<View style={{flex:1}}>
-													{item.bonus != 'Điểm sổ đầu bài'
-													? (												
-															<View style={styles.frame}>
-																<Text style={{fontSize:16, width:'65%'}}>{item.bonus}</Text>
-																<Text style={{fontSize:16}}>{item.quantity} điểm</Text>
-															</View>	
-														)
-													: (
-															<TouchableOpacity style={styles.frame}>
-																<Text style={{fontSize:16}}>{item.bonus}</Text>
-															</TouchableOpacity>	
-														)
-													}
-													<Text>Ngày tạo: {ConvertTime(item.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
-												</View>
-											)
-										:	(
-												<TouchableOpacity 
-													style={{flex:1}} 
-													onPress={()=>
-														{
-															if ((item.create_by == 'admin' || item.modified_by == 'admin') && login != 'admin') {
-																Alert.alert('Thông báo','Bạn không có quyền chỉnh sửa vi phạm này')
-															} else {
-																changeVpm(
-																	{
-																		id: item.name_vp_id?.name_vp_id, 
-																		item: item.name_vp_id?.name_vp
-																	}, 
-																	item.quantity, 
-																	item.name_student, 
-																	{
-																		vpm_id: item.vpm_id,
-																		week_id: item.week_id,
-																		class_id: item.class_id,
-																		modified_by: login
-																	},
-																	{
-																		id: item.day,
-																		item: 'Thứ '+(item.day+1)	
-																	}
-																)
-															}
-														}
-													}
-												>
+			{selectType.id == 'D'
+			? (
+				<FlatList
+	        data={ViphamDay()}
+	        renderItem={({item, index}) => (	
+						<Card style={{backgroundColor: theme.colors.inverseOnSurface, margin:5}}>
+							<Card.Content>
+								{item.name_vp_id == null 
+								? (
+										<>
+											{item.bonus != 'Điểm sổ đầu bài'
+											? (												
+												<View style={{flexDirection:'row'}}>
 													<View style={styles.frame}>
-														<Text style={{fontSize:16,width:'65%'}}>{item.name_vp_id?.name_vp}</Text>
-														<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
+														<Text style={{fontSize:16, width:'65%'}}>{item.bonus}</Text>
+														<Text style={{fontSize:16}}>{item.quantity} điểm</Text>
 													</View>
-													<Text>Ngày tạo: {ConvertTime(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>
-													{item.modified_by
-													&& (<Text>Được chỉnh sửa bởi: {item.modified_by.includes('sdl') ? 'Sao đỏ '+item.modified_by.slice(3) : item.modified_by}</Text>)
+													<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox,{display:view}]}>
+														<MaterialCommunityIcons name='close-box' color='black' size={40} />
+													</TouchableOpacity>	
+												</View>	
+												)
+											: (
+													<TouchableOpacity style={styles.frame}>
+														<Text style={{fontSize:16}}>{item.bonus}</Text>
+													</TouchableOpacity>	
+												)
+											}
+											<Text>Ngày tạo: {CombineConvert(item.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>												
+										</>
+									)
+								:	(
+										<TouchableOpacity  
+											onPress={()=>
+												{
+													if ((item.create_by == 'admin' || item.modified_by == 'admin') && login != 'admin') {
+														Alert.alert('Thông báo','Bạn không có quyền chỉnh sửa vi phạm này')
+													} else {
+														changeVpm(
+															{
+																id: item.name_vp_id?.name_vp_id, 
+																item: item.name_vp_id?.name_vp
+															}, 
+															item.quantity, 
+															item.name_student, 
+															{
+																vpm_id: item.vpm_id,
+																week_id: item.week_id,
+																class_id: item.class_id,
+																modified_by: login
+															},
+															{
+																id: item.day,
+																item: 'Thứ '+(item.day+1)	
+															}
+														)
 													}
-													<Text>Danh sách hs vi phạm: {item.name_student}</Text>	
-												</TouchableOpacity>
-											)
-										}
-
-										{item.bonus != 'Điểm sổ đầu bài'
-										&& (
-												<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox,{display:view}]}>
-													<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
+												}
+											}
+										>
+											<View style={{flexDirection:'row'}}>
+												<View style={styles.frame}>
+													<Text style={{fontSize:16,width:'65%'}}>{item.name_vp_id?.name_vp}</Text>
+													<Text style={{fontSize:16}}>{item.quantity} học sinh</Text>
+												</View>
+												<TouchableOpacity onPress={()=>handleDel(item,index)} style={[styles.delBox, {display:view}]}>
+													<MaterialCommunityIcons name='close-box' color='black' size={40} />
 												</TouchableOpacity>	
-											 )
-										}
-									</View>								
-				        )
+											</View>
+											<View>
+												<Text>Ngày tạo: {CombineConvert(item?.create_at)}, bởi: {item.create_by.includes('sdl') ? 'Sao đỏ '+item.create_by.slice(3) : item.create_by}</Text>
+												{item.modified_by
+												&& (<Text>Chỉnh sửa bởi: {item.modified_by.includes('sdl') ? 'Sao đỏ '+item.modified_by.slice(3) : item.modified_by}</Text>)
+												}
+												{item.name_student
+												&& (<Text>Danh sách hs vi phạm: {item.name_student}</Text>)
+												}									
+											</View>
+										</TouchableOpacity>
+									)
+								}					
+							</Card.Content>
+						</Card>			
+	        )
 
-				      	}
-				        keyExtractor={(item, idx) => item.vpm_id}
-				        ListFooterComponent={
-				      		<View style={{height:60}} />  	
-				        }
-				        ListEmptyComponent={
-				        	<View style={styles.itemBox}>
-										<Text>Chưa có vi phạm</Text>
-										<ActivityIndicator size="large" />
-									</View>	
-				        }
-				      />
-
-		 					// <List.AccordionGroup>
-						  //   <List.Accordion title="Accordion 1" id="1">
-						  //     <List.Item title="Item 1" />
-						  //     <List.Item title="Item 1" />
-						  //   </List.Accordion>
-						  //   <List.Accordion title="Accordion 2" id="2">
-						  //   	<List.Item title="Item 1" />
-						  //     <List.Item title="Item 2" />
-						  //   </List.Accordion>
-						  //   <View>
-						  //     <Text>
-						  //       List.Accordion can be wrapped because implementation uses React.Context.
-						  //     </Text>
-						  //     <List.Accordion title="Accordion 3" id="3">
-						  //       <List.Item title="Item 3" />
-						  //       <List.Item title="Item 1" />
-						  //     </List.Accordion>
-						  //   </View>
-						  // </List.AccordionGroup>
-		 				)
-		 			: (
-		 					<ScrollView style={{flex:1,backgroundColor:'white',borderRadius:30,padding:10,margin:10}}>
-		 						<Text style={{fontSize:20,fontWeight:'500'}}>{noteList?.note}</Text>
-		 						<View style={{height:50}} />
-		 					</ScrollView>
-		 				)
-		 			}					
-				</Card.Content>
-			</Card>
+	      	}
+	        keyExtractor={(item, idx) => item.vpm_id}
+	        ListFooterComponent={
+	      		<View style={{height:40}} />  	
+	        }
+	        ListEmptyComponent={
+	        	<View style={styles.itemBox}>
+							<Text>Chưa có vi phạm</Text>
+							<ActivityIndicator size="large" />
+						</View>	
+	        }
+	      />
+				)
+			: (
+					<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
+						<Card.Content>
+							<Text style={{fontSize:18,fontWeight:'500'}}>{noteList?.note}</Text>						
+						</Card.Content>
+					</Card>
+				)
+			}					
 		</ScrollView>
-		  {/*<Text style={styles.header}>Danh sách vi phạm {classe} (Tuần {week.slice(2)})</Text>  */}
- 			
- 			
-
-
-   			
-   		             		  
+     		  
 		  <Form 
 		  	items={ConvertItem()} 
 		  	SDBList={SDBList}

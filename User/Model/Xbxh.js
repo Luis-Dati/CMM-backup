@@ -15,6 +15,7 @@ import styles from './styles';
 import DATA_URL from '../../url.js'
 
 const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc}) => {
+	const theme = useTheme();
 	const [, updateState] = React.useState();
 	const forceUpdate = React.useCallback(() => updateState({}), []);
 	const [modal, setModal] = useState(false)
@@ -43,7 +44,7 @@ const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc}) => {
 
 	return (
 		<>
-			<Card>
+			<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 				<Card.Title title={`Tuần ${week.slice(2)}`} titleVariant='titleLarge'/>
 				<Divider />
 				<Card.Content>
@@ -620,7 +621,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 
 	// xuất xlsx
 	async function writeWorkbook(wb) {
-		let data = await CalculateSomeData()._z
+		let data = await CalculateSomeData()
 		
 	  /* generate worksheet and workbook */
 		let MainRow = [

@@ -3,7 +3,7 @@ import { Dimensions, FlatList, View, Text, ScrollView, TouchableOpacity, Modal, 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import NumericInput from 'react-native-numeric-input';
 import { RadioButton } from 'react-native-paper';
-import { DataTable, PaperProvider, Card, Divider } from 'react-native-paper';
+import { useTheme, DataTable, PaperProvider, Card, Divider } from 'react-native-paper';
 
 import styles from './styles';
 import DATA_URL from '../../url.js'
@@ -11,6 +11,7 @@ import DATA_URL from '../../url.js'
 let deviceWidth = Dimensions.get('window').width
 
 const Gutd = () => {
+	const theme = useTheme();
 	const [gutd, setGutd] = useState(null);
 	const [view, setView] = useState('none');
 	const [right, setRight] = useState(0)
@@ -142,7 +143,7 @@ const Gutd = () => {
 	return (
 		<PaperProvider>	
 			<ScrollView>
-				<Card>
+				<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 					<Card.Title titleVariant='headlineMedium' title='Bảng các loại vi phạm' />
 					<Divider />
 					<Card.Content>
@@ -151,12 +152,14 @@ const Gutd = () => {
 				        <DataTable.Title textStyle={{fontSize:16}}>STT</DataTable.Title>
 				        <DataTable.Title textStyle={{fontSize:16}}>Tên vi phạm</DataTable.Title>
 				        <DataTable.Title textStyle={{fontSize:16}} numeric>Điểm -/+</DataTable.Title>
+				        <DataTable.Title style={{display:view}} numeric>{' '}</DataTable.Title>
 				      </DataTable.Header>
 
 				      <FlatList
 				        data={gutd?.slice(from, to)}
 				        renderItem={({item, index}) => (
-				        	<DataTable.Row key={index+1} 
+				        <>
+				        	<DataTable.Row right={(props) => <Avatar.Icon {...props} icon="folder" />} key={index+1} 
 				        		onPress={()=>{
 										setModal2(true);setIdChange(item.name_vp_id);
 										setNvp(item.name_vp);setNscore(item.minus_pnt)
@@ -166,7 +169,14 @@ const Gutd = () => {
 					          	<Text numberOfLines={1}>{item.name_vp}</Text>
 					          </View>
 					          <DataTable.Cell numeric>{item.minus_pnt}</DataTable.Cell>
+					          <DataTable.Cell style={{display:view}} numeric>
+					          	<TouchableOpacity onPress={()=>handleDel(item,index)} style={[{display:view}]}>
+												<MaterialCommunityIcons style={{display: view}} name='delete-forever' color='black' size={25} />
+											</TouchableOpacity>
+					          </DataTable.Cell>	
 					        </DataTable.Row>
+				          
+				        </>
 				        )}
 				        keyExtractor={(item, idx) => item.name_vp_id+idx}
 				        ListEmptyComponent={

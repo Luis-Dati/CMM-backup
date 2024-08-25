@@ -100,7 +100,7 @@ const Grade = ({ navigation, route }) => {
 								<Sunday navigation={navigation} grade={grade} classList={classList} week={week} onPress={onPress}/>
 							)
 						:	(									
-								<Card>
+								<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 									<Card.Title titleVariant="headlineMedium" title="Chọn lớp của bạn" />
 									<Divider bold/>
 									<Card.Content>		
@@ -111,7 +111,7 @@ const Grade = ({ navigation, route }) => {
 										  renderItem={({ item }) => (
 										  	<Surface style={{borderRadius:15,backgroundColor:theme.colors.ownColorContainer}} elevation={3}>
 										  		<TouchableOpacity onPress={()=>onPress(item.class_id, item.class_name)} style={[styles.itemContainer]}>
-													  <Text style={[styles.itemName,{color:theme.colors.lighterOwnColor}]}>{item.class_name}</Text> 
+													  <Text style={[styles.itemName,{fontWeight:'bold',color:theme.colors.lighterOwnColor}]}>{item.class_name}</Text> 
 													</TouchableOpacity>
 										  	</Surface>
 										  )}

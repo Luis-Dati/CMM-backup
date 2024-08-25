@@ -4,7 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { SimpleGrid } from 'react-native-super-grid';
 import SwitchSelector from "react-native-switch-selector";
 import NumericInput from 'react-native-numeric-input';
-import { Button, TextInput, FAB, Portal, Avatar, DataTable, Card, RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
+import { useTheme, Button, TextInput, FAB, Portal, Avatar, DataTable, Card, RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
 
 import styles from './styles';
 import DATA_URL from '../../url.js'
@@ -73,6 +73,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 	];
 	
 	const ShowClassMethod = ({ grade }) => {
+		const theme = useTheme();
 		let lst = null;
 
 		if (data2.length != 0) {
@@ -80,7 +81,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 		} 
 
 		return (
-			<Card>
+			<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 				<Card.Title title='Danh sách tài khoản' titleVariant='titleLarge' />
 				<Divider />
 				<Card.Content>
@@ -105,6 +106,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 			 		  				])}} style={[{alignItems:'center',justifyContent:'center'},{display:view}]}>
 										<MaterialCommunityIcons name='close' color='black' size={30} />
 									</TouchableOpacity>
+									<Divider bold={true}/>
 				        </DataTable.Row>
 			        )}
 			        keyExtractor={(item, idx) => item.user_class+idx}
@@ -169,7 +171,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 			<View style={{height:10}} />
 			<ScrollView>
 				<ShowClassMethod grade={grade} />
-				<View style={{height:20}} />
+				<View style={{height:50}} />
 			</ScrollView>
 			
 			
@@ -181,6 +183,7 @@ const Dslh = ({ level }) => {
 	const [modal, setModal] = useState(false)
 	const [modal2, setModal2] = useState(false)
 	const [tool, setTool] = useState(true)
+	const theme = useTheme()
 
 	const [state, setState] = React.useState({ open: false });
   const onStateChange = ({ open }) => setState({ open });
@@ -708,7 +711,7 @@ const Dslh = ({ level }) => {
 				visible={modal2}
 			>
 				<View style={[styles.entireView,{justifyContent:'center',alignItems:'center'}]}>
-					<Card>
+					<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
 						<Card.Content>
 						<DataTable>
 							<DataTable.Row>

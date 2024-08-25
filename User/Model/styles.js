@@ -94,22 +94,25 @@ const styles = StyleSheet.create({
 		flex:1,
 	},
 	delBox:{
-		width:50,
-		height:50,
-		marginLeft:10,
+		marginLeft:5,
 		justifyContent:'center',
 		alignItems:'center',
-		borderRadius:10,
-		borderWidth:1
 	},
   dropdown: {
     height: 50,
     borderColor: 'white',
     borderWidth: 0.5,
     borderRadius: 8,
-    paddingHorizontal: 8,
-    width:120,
+    paddingHorizontal: 5,
   },
+  dropdown2: {
+		height: 50,
+		borderColor: 'black',
+		borderWidth: 1,
+		paddingHorizontal: 8,
+		textAlign: 'center',
+		flex:1.05
+	},
   filterBox:{  
   	flexDirection:'row', 
   	alignItems:'center', 
