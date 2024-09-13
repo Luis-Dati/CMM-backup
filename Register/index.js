@@ -3,7 +3,7 @@ import { Button, Image, View, Text, ScrollView, TextInput, Alert } from 'react-n
 import * as ImagePicker from 'expo-image-picker';
 
 import styles from './styles';
-import DATA_URL from '../url.js'
+import { DATA_URL, API_KEY } from '../url.js';
 const Image_URL = 'https://imageuploader.luis-dati.repl.co/'
 
 const Register = ({ navigation }) => {
@@ -47,6 +47,7 @@ const Register = ({ navigation }) => {
 	    method: 'POST',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	    body: JSON.stringify(param),
 	  });

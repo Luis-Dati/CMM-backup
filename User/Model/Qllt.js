@@ -6,7 +6,7 @@ import NumericInput from 'react-native-numeric-input';
 
 import { FormatDate, ConvertTime } from '../../toolkit.js';
 import styles from './styles'
-import DATA_URL from '../../url.js'
+import { DATA_URL, API_KEY } from '../../url.js';
 
 const Qllt = () => {
 	const [show, setShow] = useState(false)
@@ -24,7 +24,12 @@ const Qllt = () => {
 
 	const fetchWeekList = async () => {
 		try {
-			const response = await fetch(DATA_URL+'week');
+			const response = await fetch(DATA_URL+'week', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
 			const jsonData = await response.json();
 			setWeekList(jsonData);
 		} catch (error) {
@@ -45,6 +50,7 @@ const Qllt = () => {
 	    headers: {
 	    	'Accept': 'application/json',
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	    body: JSON.stringify(week),
 	  });
@@ -72,6 +78,7 @@ const Qllt = () => {
 	    headers: {
 	    	'Accept': 'application/json',
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	    body: JSON.stringify(newWeek),
 	  });

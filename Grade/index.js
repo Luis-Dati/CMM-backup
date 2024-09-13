@@ -5,7 +5,7 @@ import { Surface, Card, Divider, useTheme } from 'react-native-paper';
 
 import styles from './styles'
 import { GradeShow } from '../User/Model/Xbxh';
-import DATA_URL from '../url.js'
+import { DATA_URL, API_KEY } from '../url.js';
 
 const Sunday = ({ navigation, grade, classList, week }) => {
 	const [scoreList, setScoreList] = useState(null)
@@ -14,7 +14,12 @@ const Sunday = ({ navigation, grade, classList, week }) => {
 
 	const fetchScoreList = async () => {
     try {
-      const response = await fetch(DATA_URL+'score/'+week);
+      const response = await fetch(DATA_URL+'score/'+week, {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setScoreList(jsonData);
     } catch (error) {
@@ -52,7 +57,12 @@ const Grade = ({ navigation, route }) => {
 	const fetchWeek = async () => {
 		const date = new Date()
 		try {
-			const response = await fetch(DATA_URL+'week');
+			const response = await fetch(DATA_URL+'week', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
 			const jsonData = await response.json();
 			const temp = jsonData.find(obj => date.toDateString() == add1days(new Date(obj.end_date)).toDateString())
 			if (!temp) {
@@ -69,7 +79,12 @@ const Grade = ({ navigation, route }) => {
 
   const fetchClassList = async () => {
     try {
-      const response = await fetch(DATA_URL+'class');
+      const response = await fetch(DATA_URL+'class', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setClassList(jsonData);
     } catch (error) {

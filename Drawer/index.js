@@ -6,12 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// import { login } from '../Home/index';
 import { UserScreen } from '../TotalScreen';
 import styles from './styles';
-import DATA_URL from '../url.js'
+import { DATA_URL, API_KEY } from '../url.js';
 
-// const DATA_URL = 'https://realistic.luis-dati.repl.co/'
 import CryptoES from "crypto-es";
 
 function EncryptPass (pass, key) {
@@ -100,6 +98,7 @@ export default function DrawerContent(props) {
 	    method: 'PUT',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	    body: JSON.stringify(param),
 	  });

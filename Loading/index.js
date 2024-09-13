@@ -8,7 +8,11 @@ import { Button, Menu, Divider, PaperProvider, TextInput } from 'react-native-pa
 import { Dropdown } from 'react-native-element-dropdown';
 
 import styles from './styles'; 
-import DATA_URL from '../url.js'
+
+// const DATA_URL = process.env.EXPO_PUBLIC_DATA_URL;
+// const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
+
+import { DATA_URL, API_KEY } from '../url.js';
 
 let deviceWidth = Dimensions.get('window').width;
 import CryptoES from "crypto-es";
@@ -129,7 +133,12 @@ const Loading = ({navigation}) => {
 	// handle something
 	const fetchData = async () => {
 		try {
-			const response = await fetch(DATA_URL+'userall');
+			const response = await fetch(DATA_URL+'userall', {
+				method: 'GET',
+				headers: {
+					'api-key': API_KEY,
+				}
+			});
 			const jsonData = await response.json();
 			jsonData.map(obj=>obj.password = DecryptPass(obj.password, obj.user_role))
 			setData(jsonData);

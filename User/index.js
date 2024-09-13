@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import { ConvertTime } from '../toolkit.js';
 import styles from './styles';
-import DATA_URL from '../url.js';
+import { DATA_URL, API_KEY } from '../url.js';
 
 const User = ({route, navigation}) => {
 	const theme = useTheme()
@@ -30,7 +30,12 @@ const User = ({route, navigation}) => {
 
 	const fetchClassList = async () => {
 		try {
-			const response = await fetch(DATA_URL+'class');
+			const response = await fetch(DATA_URL+'class', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
 			const jsonData = await response.json();
 			setClassList(jsonData);
 		} catch (error) {
@@ -41,7 +46,12 @@ const User = ({route, navigation}) => {
 	const fetchWeek = async () => {
 		const date = ConvertTime(new Date())
 		try {
-			const response = await fetch(DATA_URL+'week');
+			const response = await fetch(DATA_URL+'week', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
 			const jsonData = await response.json();
 			setWeekList(jsonData)
 			const temp = jsonData.find(obj => new Date(obj.start_date) <= date && date <= new Date(obj.end_date)) 
@@ -54,7 +64,12 @@ const User = ({route, navigation}) => {
 	const fetchLtList = async () => {
 		if (week) {
 			try {
-				const response = await fetch(DATA_URL+'lichtruc/'+week);
+				const response = await fetch(DATA_URL+'lichtruc/'+week, {
+				  method: 'GET',
+				  headers: {
+				    'api-key': API_KEY,
+				  }
+				});
 				const jsonData = await response.json();
 				const temp = jsonData.find(obj => obj.class_active == 'cls' + login.slice(3))        
 				if (temp) {
@@ -247,6 +262,11 @@ const User = ({route, navigation}) => {
 										keyExtractor={(item, index) => item + index}
 										renderItem={({item, index}) => (
 											<Button labelStyle={{fontSize:16}} mode={widthGrid != 0 ? 'elevated' : 'text'} textColor={widthGrid != 0 ? theme.colors.ownColor : '#fff'} buttonColor={widthGrid != 0 ? theme.colors.lighterOwnColorContainer : '#fff'} onPress={()=>{
+												if((login == 'admin12' && !item.includes('12')) || (login == 'admin11' && !item.includes('11')) || (login == 'admin10' && !item.includes('10'))){
+													Alert.alert('Thông báo', 'Bạn không có quyền truy cập lớp này')
+													return
+												}
+												
 												setMv(false);
 												navigation.navigate('Model',{login:login,type:typefnc,classe:item,week:'wk'+('00'+week).slice(-2)})
 											}}

@@ -7,7 +7,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import styles from './styles'
 import Form from '../../components/Form/index'
-import DATA_URL from '../../url.js'
+import { DATA_URL, API_KEY } from '../../url.js';
 import { CombineConvert } from '../../toolkit.js'
 
 let deviceWidth = Dimensions.get('window').width
@@ -49,7 +49,12 @@ const Stvp = ({ classe, login, week }) => {
 
   const fetchVpmList = async () => {
     try {
-      const response = await fetch(DATA_URL+'vipham/cls'+classe+'/'+week);
+      const response = await fetch(DATA_URL+'vipham/cls'+classe+'/'+week, {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       let check = jsonData.find(obj=>obj.bonus=='Điểm sổ đầu bài')
       if (check) {
@@ -74,7 +79,12 @@ const Stvp = ({ classe, login, week }) => {
 
   const fetchRuleList = async () => {
     try {
-      const response = await fetch(DATA_URL+'rules');
+      const response = await fetch(DATA_URL+'rules', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setRuleList(jsonData);
     } catch (error) {
@@ -84,7 +94,12 @@ const Stvp = ({ classe, login, week }) => {
 
   const fetchNoteList = async () => {
     try {
-      const response = await fetch(DATA_URL+'score/'+week);
+      const response = await fetch(DATA_URL+'score/'+week, {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       let jsonData = await response.json();
       jsonData = jsonData.find(item=>item.class_id == 'cls'+classe)
       setNoteList(jsonData);
@@ -133,6 +148,7 @@ const Stvp = ({ classe, login, week }) => {
 			headers: {
 				'Accept': 'application/json',
 				"Content-Type":"application/json",
+				'api-key': API_KEY,
 			},
 			body: JSON.stringify({...item, change: opt})
 		}
@@ -144,6 +160,7 @@ const Stvp = ({ classe, login, week }) => {
 			headers: {
 				'Accept': 'application/json',
 				"Content-Type":"application/json",
+				'api-key': API_KEY,
 			},
 			body: JSON.stringify(item)
 		};
@@ -166,6 +183,7 @@ const Stvp = ({ classe, login, week }) => {
 			headers: {
 				'Accept': 'application/json',
 				"Content-Type":"application/json",
+				'api-key': API_KEY,
 			},
 			body: JSON.stringify(item)
 		};
@@ -186,7 +204,12 @@ const Stvp = ({ classe, login, week }) => {
 			Alert.alert('Thông báo','Bạn không có quyền xóa vi phạm này')
 			return
 		}
-		let option = { method:"DELETE" };
+		let option = {
+		  method: 'DELETE',
+		  headers: {
+		    'api-key': API_KEY,
+		  }
+		};
 		
 		const response = await fetch(DATA_URL+'vipham/'+item.vpm_id, option)
 		const responseDec = await fetch(DATA_URL+'statisticOnDay', optChange(item, 'dec'));

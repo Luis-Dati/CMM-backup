@@ -4,10 +4,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { SimpleGrid } from 'react-native-super-grid';
 import SwitchSelector from "react-native-switch-selector";
 import NumericInput from 'react-native-numeric-input';
-import { useTheme, Button, TextInput, FAB, Portal, Avatar, DataTable, Card, RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
+import { SegmentedButtons, useTheme, Button, TextInput, FAB, Portal, Avatar, DataTable, Card, RadioButton, Divider, Menu, PaperProvider, Snackbar } from 'react-native-paper';
 
 import styles from './styles';
-import DATA_URL from '../../url.js'
+import { DATA_URL, API_KEY } from '../../url.js';
 import CryptoES from "crypto-es";
 
 function EncryptPass (pass, key) {
@@ -25,6 +25,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -32,6 +33,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -39,6 +41,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -46,6 +49,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -53,6 +57,7 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -195,6 +200,14 @@ const Dslh = ({ level }) => {
 	const [newOne, setNewOne] = useState('')
 	const [numWeek, setNumWeek] = useState(0)
 
+	const typeAccs = [
+	  { label: "Admin", value: 'admin', checkedColor: theme.colors.ownColor },
+	  { label: "Sao đỏ", value: 'sdl', checkedColor: theme.colors.ownColor },
+	];
+	const [typeAcc, setTypeAcc] = useState('')
+
+	const [accGrade, setAccGrade] = useState(10)
+
 	const [k10, setk10] = useState(0)
 	const [k11, setk11] = useState(0)
 	const [k12, setk12] = useState(0)
@@ -219,7 +232,12 @@ const Dslh = ({ level }) => {
 
 	const fetchUserList = async () => {
     try {
-      const response = await fetch(DATA_URL+'user');
+      const response = await fetch(DATA_URL+'user', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       jsonData.map(obj=>obj.password = DecryptPass(obj.password, obj.user_role))
       setUserList(jsonData);
@@ -230,7 +248,12 @@ const Dslh = ({ level }) => {
 
   const fetchClassList = async () => {
     try {
-      const response = await fetch(DATA_URL+'class');
+      const response = await fetch(DATA_URL+'class', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setClassList(jsonData);
     } catch (error) {
@@ -240,7 +263,12 @@ const Dslh = ({ level }) => {
 
   const fetchNumWeek = async () => {
     try {
-      const response = await fetch(DATA_URL+'week');
+      const response = await fetch(DATA_URL+'week', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setNumWeek(jsonData.length);
     } catch (error) {
@@ -271,20 +299,20 @@ const Dslh = ({ level }) => {
   	CreateData()
   }, [signal]);
 
+  function generate() {
+	  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	  let result = '';
+
+	  for (let i = 0; i < 10; i++) {
+	    const randomIndex = Math.floor(Math.random() * characters.length);
+	    result += characters.charAt(randomIndex);
+	  }
+
+	  return result;
+	}
+
   function makeUser(para) {
 		let lstUser = []
-
-		function generate() {
-		  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-		  let result = '';
-
-		  for (let i = 0; i < 10; i++) {
-		    const randomIndex = Math.floor(Math.random() * characters.length);
-		    result += characters.charAt(randomIndex);
-		  }
-
-		  return result;
-		}
 
 		para.map((value, index) => {
 			lstUser.push({
@@ -305,7 +333,6 @@ const Dslh = ({ level }) => {
 			lstClass.push({
 				class_id:'cls'+value,
 				class_name:'Lớp '+value,
-				gvcn_id:null
 			})
 		})
 
@@ -343,6 +370,7 @@ const Dslh = ({ level }) => {
 		    method: 'POST',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });
@@ -354,6 +382,7 @@ const Dslh = ({ level }) => {
 		    method: 'POST',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });
@@ -365,6 +394,7 @@ const Dslh = ({ level }) => {
 		    method: 'POST',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });
@@ -376,6 +406,7 @@ const Dslh = ({ level }) => {
 		    method: 'POST',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });
@@ -393,6 +424,7 @@ const Dslh = ({ level }) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -400,6 +432,7 @@ const Dslh = ({ level }) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -407,6 +440,7 @@ const Dslh = ({ level }) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -414,6 +448,7 @@ const Dslh = ({ level }) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -421,6 +456,7 @@ const Dslh = ({ level }) => {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
 	    },
 	  });
 
@@ -435,63 +471,100 @@ const Dslh = ({ level }) => {
   }
 
   async function handleCreateOne() {	
-  	let multi = classList.find((obj)=>obj.class_id === 'cls'+ newOne)
-  	if (multi) {
-  		Alert.alert('Thông báo','Lớp '+newOne+' đã xuất hiện')
-  	} else {
-  		setModal2(false)
-	  	setNewOne('')
+  	if(typeAcc == '') {
+  		Alert.alert("Thông báo", "Hãy chọn loại tài khoản");
+  		return;
+  	}
 
-			const response1 = await fetch(DATA_URL+'class', {
-		    method: 'POST',
-		    headers: {
-		      'Content-Type': 'application/json',
-		    },
-		    body: JSON.stringify(makeClass(Array(newOne))[0]),
-		  });
+  	if(typeAcc == 'admin'){
+  		let newAcc = {
+  			user_id: 'adm' + accGrade,
+  			password: EncryptPass(generate(), 'admin'+accGrade),
+  			user_role: 'admin' + accGrade,
+  			role: 'admin' + accGrade
+  		}
 
-			const response2 = await fetch(DATA_URL+'user', {
-		    method: 'POST',
-		    headers: {
-		      'Content-Type': 'application/json',
-		    },
-		    body: JSON.stringify(makeUser(Array(newOne))[0]),
-		  });
+  		const response = await fetch(DATA_URL+'user', {
+			  method: 'POST',
+			  headers: {
+			  	'Content-Type': 'application/json',
+			    'api-key': API_KEY,
+			  },
+			  body: JSON.stringify(newAcc),
+			})
 
-			const response3 = await createLt()
-
-			async function createLt () {
-			  let lst = Array.from({ length: numWeek }, (_, i) => ("00" +  (i + 1)).slice(-2));
-			  
-			  await lst.forEach(async (item, idx)=>{
-			  	const response3 = await fetch(DATA_URL+'lichtruc', {
-				    method: 'POST',
-				    headers: {
-				      'Content-Type': 'application/json',
-				    },
-				    body: JSON.stringify({week_id:'wk'+item,class_active:'cls'+newOne,class_passive:null}),
-				  });
-
-				  const response4 = await fetch(DATA_URL+'score', {
-				    method: 'POST',
-				    headers: {
-				      'Content-Type': 'application/json',
-				    },
-				    body: JSON.stringify({week_id: 'wk'+item,class_id: 'cls'+newOne,score: 0}),
-				  });
-			  })
-
-			  return true
-			}
-
-		  if (response1.status === 200 && response2.status === 200) {
+  		if (response.status === 200) {
 		    Alert.alert('Thông báo', 'Thêm thành công',[
-	    		{text:'OK',onPress:()=>{setSignal(newOne)}}
+	    		{text:'OK',onPress:()=>{setSignal(newAcc); setModal2(false)}}
 	    	])
 		  } else {
 		    Alert.alert('Error fetching data');
 		  }	
+
+  	} else if(typeAcc == 'cls') {
+	  	let multi = classList.find((obj)=>obj.class_id === 'cls'+ newOne)
+	  	if (multi) {
+	  		Alert.alert('Thông báo','Lớp '+newOne+' đã xuất hiện')
+	  	} else {
+	  		setModal2(false)
+		  	setNewOne('')
+
+				const response1 = await fetch(DATA_URL+'class', {
+			    method: 'POST',
+			    headers: {
+			      'Content-Type': 'application/json',
+			      'api-key': API_KEY,
+			    },
+			    body: JSON.stringify(makeClass(Array(newOne))[0]),
+			  });
+
+				const response2 = await fetch(DATA_URL+'user', {
+			    method: 'POST',
+			    headers: {
+			      'Content-Type': 'application/json',
+			      'api-key': API_KEY,
+			    },
+			    body: JSON.stringify(makeUser(Array(newOne))[0]),
+			  });
+
+				const response3 = await createLt()
+
+				async function createLt () {
+				  let lst = Array.from({ length: numWeek }, (_, i) => ("00" +  (i + 1)).slice(-2));
+				  
+				  await lst.forEach(async (item, idx)=>{
+				  	const response3 = await fetch(DATA_URL+'lichtruc', {
+					    method: 'POST',
+					    headers: {
+					      'Content-Type': 'application/json',
+					      'api-key': API_KEY,
+					    },
+					    body: JSON.stringify({week_id:'wk'+item,class_active:'cls'+newOne,class_passive:null}),
+					  });
+
+					  const response4 = await fetch(DATA_URL+'score', {
+					    method: 'POST',
+					    headers: {
+					      'Content-Type': 'application/json',
+					      'api-key': API_KEY,
+					    },
+					    body: JSON.stringify({week_id: 'wk'+item,class_id: 'cls'+newOne,score: 0}),
+					  });
+				  })
+
+				  return true
+				}
+
+			  if (response1.status === 200 && response2.status === 200) {
+			    Alert.alert('Thông báo', 'Thêm thành công',[
+		    		{text:'OK',onPress:()=>{setSignal(newOne); setModal2(false)}}
+		    	])
+			  } else {
+			    Alert.alert('Error fetching data');
+			  }	
+	  	}
   	}
+
   		
   }
 
@@ -507,12 +580,12 @@ const Dslh = ({ level }) => {
           actions={[
 				    {
 				      icon: 'plus-circle',
-				      label: 'Tạo 1 lớp',
+				      label: 'Tạo 1 tài khoản',
 				      onPress : () => {setModal2(true);setView('none');setRight(0)}
 				    },
 				    { 
 				    	icon: 'close-circle', 
-				    	label: 'Xoá 1 lớp',
+				    	label: 'Xoá 1 tài khoản',
 				    	onPress: () => {setView(view == 'flex' ? 'none' : 'flex');setRight(right == 30 ? 0 : 30)},
 				    },
 				    {
@@ -712,13 +785,21 @@ const Dslh = ({ level }) => {
 			>
 				<View style={[styles.entireView,{justifyContent:'center',alignItems:'center'}]}>
 					<Card style={{backgroundColor: theme.colors.inverseOnSurface}}>
+						<Card.Title title="Loại tài khoản" titleVariant='titleLarge' />
 						<Card.Content>
 						<DataTable>
+							<SegmentedButtons
+				        value={typeAcc}
+				        onValueChange={setTypeAcc}
+				        buttons={typeAccs}
+				      />
+				      <View style={{height: 10}} />
 							<DataTable.Row>
 								<DataTable.Cell>Khối</DataTable.Cell>
 								<View>
 									<NumericInput  
-										onChange={value => {}} 
+										value={accGrade}
+										onChange={value => setAccGrade(value)} 
 										rounded
 									/>
 								</View>
@@ -728,6 +809,7 @@ const Dslh = ({ level }) => {
 				 					label='Tên lớp mới' 
 				 					value={newOne}
 				 					onChangeText={value=>setNewOne(value)}
+				 					disabled={typeAcc == 'admin'}
 				 				/>
 						</DataTable>
 						</Card.Content>

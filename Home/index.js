@@ -9,7 +9,7 @@ import { useTheme, Card, Avatar, Divider, DataTable, Surface } from 'react-nativ
 import { ConvertTime, FormatDate } from '../toolkit.js';
 import { ShowCalen } from '../User/Model/Sxlt'
 import styles from './styles'
-import DATA_URL from '../url.js'
+import { DATA_URL, API_KEY } from '../url.js';
 
 let deviceWidth = Dimensions.get('window').width
 
@@ -104,7 +104,12 @@ const Home = ({ route, navigation }) => {
 
 	const fetchWeek = async () => {		
 		try {
-			const response = await fetch(DATA_URL+'week');
+			const response = await fetch(DATA_URL+'week', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
 			const jsonData = await response.json();
 			setWeek(jsonData.find(obj => ConvertTime(new Date(obj.start_date)) <= date && date <= ConvertTime(new Date(obj.end_date))));
 			return true
@@ -116,7 +121,12 @@ const Home = ({ route, navigation }) => {
 	const fetchLtList = async () => {
 		if (week) {
 			try {
-				const response = await fetch(DATA_URL+'lichtruc/'+week.week_id);
+				const response = await fetch(DATA_URL+'lichtruc/'+week.week_id, {
+				  method: 'GET',
+				  headers: {
+				    'api-key': API_KEY,
+				  }
+				});
 				const jsonData = await response.json();
 				setLtList(jsonData);
 				return true

@@ -12,7 +12,7 @@ import * as Sharing from 'expo-sharing';
 
 import { FormatDate, ConvertTime } from '../../toolkit.js';
 import styles from './styles';
-import DATA_URL from '../../url.js'
+import { DATA_URL, API_KEY } from '../../url.js';
 
 const GradeShow = ({ navigation, data2, grade, week, fnc, snackFnc}) => {
 	const theme = useTheme();
@@ -146,7 +146,12 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 
 	const fetchScoreList = async () => {
     try {
-      const response = await fetch(DATA_URL+'score/'+week);
+      const response = await fetch(DATA_URL+'score/'+week, {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setScoreList(jsonData);
     } catch (error) {
@@ -156,7 +161,12 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 
   const fetchClassList = async () => {
     try {
-      const response = await fetch(DATA_URL+'class');
+      const response = await fetch(DATA_URL+'class', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setClassList(jsonData);
     } catch (error) {
@@ -166,7 +176,12 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 
   const fetchVpmList = async () => {
     try {
-      const response = await fetch(DATA_URL+'vipham/'+week);
+      const response = await fetch(DATA_URL+'vipham/'+week, {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setVpmList(jsonData);
     } catch (error) {
@@ -176,7 +191,12 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 
   const fetchRuleList = async () => {
     try {
-      const response = await fetch(DATA_URL+'rules');
+      const response = await fetch(DATA_URL+'rules', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setRuleList(jsonData);
     } catch (error) {
@@ -285,6 +305,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		    method: 'PUT',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });
@@ -333,6 +354,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		    method: 'PUT',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });
@@ -612,6 +634,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		    method: 'PUT',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(param),
 		  });

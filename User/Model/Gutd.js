@@ -6,7 +6,7 @@ import { RadioButton } from 'react-native-paper';
 import { useTheme, DataTable, PaperProvider, Card, Divider } from 'react-native-paper';
 
 import styles from './styles';
-import DATA_URL from '../../url.js'
+import { DATA_URL, API_KEY } from '../../url.js';
 
 let deviceWidth = Dimensions.get('window').width
 
@@ -27,7 +27,12 @@ const Gutd = () => {
 
 	const fetchData = async () => {
     try {
-      const response = await fetch(DATA_URL+'rules');
+      const response = await fetch(DATA_URL+'rules', {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
       const jsonData = await response.json();
       setGutd(jsonData);
     } catch (error) {
@@ -53,11 +58,14 @@ const Gutd = () => {
   }, [itemsPerPage]);
 
 	const handleDel = async (item,index) => {
-		let option={
-			method:"DELETE",
+		let option = {
+		  method: 'DELETE',
+		  headers: {
+		    'api-key': API_KEY,
+		  }
 		};
 
-		await fetch(DATA_URL+"rules/"+item.name_vp_id,option)
+		await fetch(DATA_URL+"rules/"+item.name_vp_id, option)
 			.then((res)=>{
 				if (res.ok) {
 					Alert.alert('Thông báo','Xóa thành công',[
@@ -85,10 +93,11 @@ const Gutd = () => {
 			headers: {
 				'Accept': 'application/json',
 				"Content-Type":"application/json",
+				'api-key': API_KEY,
 			},
 			body: JSON.stringify(vpm)
 		};
-		await fetch(DATA_URL+"rules",option)
+		await fetch(DATA_URL+"rules", option)
 			.then((res)=>{
 				if (res.ok) {
 					Alert.alert('Thông báo','Chỉnh sửa thành công',[
@@ -124,6 +133,7 @@ const Gutd = () => {
 				headers: {
 					'Accept': 'application/json',
 					"Content-Type":"application/json",
+					'api-key': API_KEY,
 				},
 				body: JSON.stringify(vpm)
 			};

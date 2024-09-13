@@ -8,7 +8,7 @@ import { documentDirectory, readDirectoryAsync, readAsStringAsync, writeAsString
 import { FAB, Portal, Avatar, DataTable, Card, Divider, PaperProvider } from 'react-native-paper';
 
 import styles from './styles';
-import DATA_URL from '../../url.js'
+import { DATA_URL, API_KEY } from '../../url.js';
 
 const ShowCalen = ({ grade, data }) => {
 	let lst = null;
@@ -146,7 +146,12 @@ const Sxlt = ({ root, week }) => {
 	
 	const fetchLtList = async () => {
 		try {
-			const response = await fetch(DATA_URL+'lichtruc/'+week);
+			const response = await fetch(DATA_URL+'lichtruc/'+week, {
+			  method: 'GET',
+			  headers: {
+			    'api-key': API_KEY,
+			  }
+			});
 			const jsonData = await response.json();
 			setLtList(jsonData);
 			return true
@@ -199,6 +204,7 @@ const Sxlt = ({ root, week }) => {
 		    method: 'PUT',
 		    headers: {
 		      'Content-Type': 'application/json',
+		      'api-key': API_KEY,
 		    },
 		    body: JSON.stringify(item),
 		  });
