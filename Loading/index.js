@@ -8,10 +8,6 @@ import { Button, Menu, Divider, PaperProvider, TextInput } from 'react-native-pa
 import { Dropdown } from 'react-native-element-dropdown';
 
 import styles from './styles'; 
-
-// const DATA_URL = process.env.EXPO_PUBLIC_DATA_URL;
-// const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
-
 import { DATA_URL, API_KEY } from '../url.js';
 
 let deviceWidth = Dimensions.get('window').width;

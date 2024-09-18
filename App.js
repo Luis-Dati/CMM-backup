@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MD3LightTheme as DefaultTheme, PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'react-native';
 
 import Loading from './Loading/index'
 import Register from './Register/index'
@@ -66,9 +67,15 @@ const theme = {
 }
 
 export default function App() {
+	const colorScheme = useColorScheme();
+
+	const paperTheme =
+	colorScheme === 'light'
+		? { ...theme }
+		: { ...theme };
 
 	return (
-	<PaperProvider theme={theme}>
+	<PaperProvider theme={paperTheme}>
 		<StatusBar animated translucent={true} style='light'/>
 		<NavigationContainer>
 			<Stack.Navigator>

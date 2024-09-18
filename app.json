@@ -2,7 +2,7 @@
   "expo": {
     "name": "CMM",
     "slug": "Ms2-app",
-    "version": "2.0.3",
+    "version": "2.0.5",
     "orientation": "portrait",
     "icon": "./assets/OfficalLogo2.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
       "expo-document-picker"
     ],
     "android": {
-      "versionCode": 15,
+      "versionCode": 16,
       "adaptiveIcon": {
         "foregroundImage": "./assets/OfficalLogo2.png",
         "backgroundColor": "#000000"

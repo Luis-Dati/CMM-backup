@@ -21,6 +21,14 @@ function DecryptPass (code, key) {
 
 const ShowClass = ({ data2, setSignal, right, view}) => {
   async function handleDel(item) {
+  	const response6 = await fetch(DATA_URL+'statisticOnDay/'+item.user_class.class_id, {
+	    method: 'DELETE',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	  });
+
   	const response4 = await fetch(DATA_URL+'score/'+item.user_class.class_id, {
 	    method: 'DELETE',
 	    headers: {
@@ -122,41 +130,6 @@ const ShowClass = ({ data2, setSignal, right, view}) => {
 			    </DataTable>
 				</Card.Content>
 			</Card>
-			// <FlatList
-			// 	ListHeaderComponent={
-			// 		<View style={{flexDirection:'row',marginRight:right}}>
-			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.175}]}>STT</Text>
-			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.4}]}>Tên lớp</Text>
-			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:1}]}>Tài khoản</Text>
-						
-			// 		</View>
-			// 	}
-      //   data={lst}
-      //   renderItem={({item, index}) => (
-      //   	<TouchableOpacity style={{flexDirection:'row'}}>
-			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.175}]}>{index+1}</Text>
-			// 			<Text style={[styles.qsTxt,styles.gridTxt2,{flex:0.4}]}>{item.user_class?.class_name}</Text>
-			// 			<View style={[styles.gridTxt2,{flex:1}]}>
- 		  // 				<Text>Tên: {item.user_role}</Text>
- 		  // 				<Text>Mật khẩu: {item.password}</Text>
- 		  // 			</View>
- 		  // 			<TouchableOpacity onPress={()=>{
- 		  // 				Alert.alert('Thông báo','Bạn có chắc muốn xóa không',[
- 		  // 					{text:'Ok',onPress:()=>handleDel(item,index)},
- 		  // 					{text:'Hủy bỏ',style:'cancel'}
- 		  // 				])}} style={[{alignItems:'center',justifyContent:'center'},{display:view}]}>
-			// 				<MaterialCommunityIcons name='delete-forever' color='black' size={30} />
-			// 			</TouchableOpacity>
-			// 		</TouchableOpacity>
-      //   )}
-      //   keyExtractor={(item, idx) => item.user_class+idx}
-      //   ListFooterComponent={
-      // 		<View style={{height:50}} />  	
-      //   }
-      //   ListEmptyComponent={
-      //   	<Text>Chưa có danh sách lớp học</Text>	
-      //   }
-      // />					
 		)
 	}
 	return (
@@ -299,6 +272,66 @@ const Dslh = ({ level }) => {
   	CreateData()
   }, [signal]);
 
+	async function SendClass(param) {
+		const response = await fetch(DATA_URL+'class', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	    body: JSON.stringify(param),
+	  });
+
+	}
+
+	async function SendUser(param) {
+		const response = await fetch(DATA_URL+'user', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	    body: JSON.stringify(param),
+	  });
+
+	}
+
+	async function SendWeek(param) {
+		const response = await fetch(DATA_URL+'lichtruc', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	    body: JSON.stringify(param),
+	  });
+
+	}
+
+	async function SendScore(param) {
+		const response = await fetch(DATA_URL+'score', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	    body: JSON.stringify(param),
+	  });
+	  
+	}
+
+	async function SendStatisticOnDay(param) {
+		const response = await fetch(DATA_URL+'statisticOnDay', {
+	    method: 'POST',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	    body: JSON.stringify(param),
+	  });
+	  
+	}
+
   function generate() {
 	  const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	  let result = '';
@@ -353,65 +386,26 @@ const Dslh = ({ level }) => {
 				await SendClass(newListClass[index])
 				await SendUser(newListUser[index])
 
-				lst.forEach(async (item, idx)=>{
-					await SendWeek({week_id: 'wk'+item, class_active: 'cls'+data, class_passive: null});
-					await SendScore({week_id: 'wk'+item, class_id: 'cls'+data, score: 0});
-				})
+				const batchScore = lst.map((item, idx) => ({week_id: 'wk'+item, class_id: 'cls'+data, score: 0, deft: 0, note: ''}))
+				const batchWeekLt = lst.map((item, idx) => ({week_id: 'wk'+item, class_active: 'cls'+data, class_passive: null}))
+				let batchStatisticOnDay = []
+				const days = [1,2,3,4,5,6]
+				lst.map((item, idx) => (
+					days.map((day, idxD) => 
+						batchStatisticOnDay.push({week_id: 'wk'+item, class_id: 'cls'+data, day: day, quantity: 0})
+					)
+				))
 
-			}
-		)
+				await SendScore(batchScore)
+				await SendWeek(batchWeekLt)
+				await SendStatisticOnDay(batchStatisticOnDay)
+
+		})
 
 		Alert.alert('Thông báo','Tạo mới thành công',[
-			{text:'Ok',onPress:()=>setSignal('sended1'+newList)}
+			{text:'Ok',onPress:()=> setTimeout(() => setSignal('sended1'+newList), 2000)}
 		])
 
-		async function SendClass(param) {
-			const response = await fetch(DATA_URL+'class', {
-		    method: 'POST',
-		    headers: {
-		      'Content-Type': 'application/json',
-		      'api-key': API_KEY,
-		    },
-		    body: JSON.stringify(param),
-		  });
-	
-		}
-
-		async function SendUser(param) {
-			const response = await fetch(DATA_URL+'user', {
-		    method: 'POST',
-		    headers: {
-		      'Content-Type': 'application/json',
-		      'api-key': API_KEY,
-		    },
-		    body: JSON.stringify(param),
-		  });
-	
-		}
-
-		async function SendWeek(param) {
-			const response = await fetch(DATA_URL+'lichtruc', {
-		    method: 'POST',
-		    headers: {
-		      'Content-Type': 'application/json',
-		      'api-key': API_KEY,
-		    },
-		    body: JSON.stringify(param),
-		  });
-	
-		}
-
-		async function SendScore(param) {
-			const response = await fetch(DATA_URL+'score', {
-		    method: 'POST',
-		    headers: {
-		      'Content-Type': 'application/json',
-		      'api-key': API_KEY,
-		    },
-		    body: JSON.stringify(param),
-		  });
-		  
-		}
 	}
 
   async function handleCreate(param) {
@@ -421,6 +415,14 @@ const Dslh = ({ level }) => {
 
   async function handleDelAll() {
   	const response5 = await fetch(DATA_URL+'viphamallclass', {
+	    method: 'DELETE',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	  });
+
+	  const response6 = await fetch(DATA_URL+'statisticOnDayAll', {
 	    method: 'DELETE',
 	    headers: {
 	      'Content-Type': 'application/json',
@@ -501,7 +503,7 @@ const Dslh = ({ level }) => {
 		    Alert.alert('Error fetching data');
 		  }	
 
-  	} else if(typeAcc == 'cls') {
+  	} else if(typeAcc == 'sdl') {
 	  	let multi = classList.find((obj)=>obj.class_id === 'cls'+ newOne)
 	  	if (multi) {
 	  		Alert.alert('Thông báo','Lớp '+newOne+' đã xuất hiện')
@@ -532,25 +534,20 @@ const Dslh = ({ level }) => {
 				async function createLt () {
 				  let lst = Array.from({ length: numWeek }, (_, i) => ("00" +  (i + 1)).slice(-2));
 				  
-				  await lst.forEach(async (item, idx)=>{
-				  	const response3 = await fetch(DATA_URL+'lichtruc', {
-					    method: 'POST',
-					    headers: {
-					      'Content-Type': 'application/json',
-					      'api-key': API_KEY,
-					    },
-					    body: JSON.stringify({week_id:'wk'+item,class_active:'cls'+newOne,class_passive:null}),
-					  });
+					let batchStatisticOnDay1 = []
+					const days = [1,2,3,4,5,6]
+					lst.map((item, idx) => (
+						days.map((day, idxD) => 
+							batchStatisticOnDay1.push({week_id: 'wk'+item, class_id: 'cls'+newOne, day: day, quantity: 0})
+						)
+					))
 
-					  const response4 = await fetch(DATA_URL+'score', {
-					    method: 'POST',
-					    headers: {
-					      'Content-Type': 'application/json',
-					      'api-key': API_KEY,
-					    },
-					    body: JSON.stringify({week_id: 'wk'+item,class_id: 'cls'+newOne,score: 0}),
-					  });
-				  })
+					const batchScore = lst.map((item, idx) => ({week_id: 'wk'+item, class_id: 'cls'+newOne, score: 0, deft: 0, note: ''}))
+					const batchWeekLt = lst.map((item, idx) => ({week_id: 'wk'+item, class_active: 'cls'+newOne, class_passive: null}))
+
+					await SendScore(batchScore)
+					await SendWeek(batchWeekLt)
+					await SendStatisticOnDay(batchStatisticOnDay1)
 
 				  return true
 				}
@@ -564,8 +561,6 @@ const Dslh = ({ level }) => {
 			  }	
 	  	}
   	}
-
-  		
   }
 
 	return (		
@@ -688,15 +683,6 @@ const Dslh = ({ level }) => {
 								      //fixed
 								      spacing={10}
 								      renderItem={({ key, index }) => (
-								        // <View style={[styles.itemContainer,{borderWidth:1}]}>
-								        // 	<TextInput 
-								        // 		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
-								        // 		key={index} 
-								        // 		value={lst10[parseInt(index)]}
-								        // 		onChangeText={value => handleInputChange10(index,value)}
-								        // 	/>
-								        // 	<Text>{index+1}</Text>
-								        // </View>
 								        <TextInput 
 								        	contentStyle={{paddingHorizontal:5}}
 								        	mode='outlined'
@@ -717,15 +703,6 @@ const Dslh = ({ level }) => {
 								      //fixed
 								      spacing={10}
 								      renderItem={({ key, index }) => (
-								        // <View style={[styles.itemContainer,{borderWidth:1}]}>
-								        // 	<TextInput 
-								        // 		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
-								        // 		key={index} 
-								        // 		value={lst11[index]}
-								        // 		onChangeText={value => handleInputChange11(index,value)}
-								        // 	/>
-								        // 	<Text>{index+1}</Text>
-								        // </View>
 								        <TextInput 
 								        	contentStyle={{paddingHorizontal:5}}
 								        	mode='outlined'
@@ -746,15 +723,6 @@ const Dslh = ({ level }) => {
 								      //fixed
 								      spacing={10}
 								      renderItem={( { key, index } ) => (
-								        // <View style={[styles.itemContainer,{borderWidth:1}]}>
-								        // 	<TextInput 
-								        // 		style={{width:50,fontSize:16,borderBottomWidth:1,paddingHorizontal:5}} 
-								        // 		value={lst12[index]}
-								        // 		key={index} 
-								        // 		onChangeText={value => handleInputChange12(index,value)}
-								        // 	/>
-								        // 	<Text>{index+1}</Text>
-								        // </View>
 								        <TextInput 
 								        	contentStyle={{paddingHorizontal:5}}
 								        	mode='outlined'

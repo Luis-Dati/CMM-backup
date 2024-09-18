@@ -123,22 +123,16 @@ const Form = (props) => {
 		<View style={{backgroundColor:'transparent',borderRadius:10}}>
 			<View style={{position:'absolute',bottom:0,left:0,flexDirection:'row',alignItems:'center'}}>
 				<View style={{flexDirection:'row', alignItems:'center'}}>
-					{(props.role == "admin") || (props.role.includes('sdl'))
-					?  (
-							<View style={{flexDirection:'row', alignItems:'center'}}>
-								<TouchableOpacity onPress={() => {setMv(true);props.setFnc('none')}}>
-									<MaterialCommunityIcons name='plus-circle' size={55} color='blue' />	
-								</TouchableOpacity>
-								<TouchableOpacity onPress={() => props.setFnc(props.view == 'flex' ? 'none' : 'flex')}> 
-									<MaterialCommunityIcons name='delete-circle' size={55} color='blue' />
-								</TouchableOpacity>
-								<TouchableOpacity style={styles.handMBtn} onPress={()=>{setModalBns(true)}}> 
-									<Image source={require('../../assets/DiemB.png')} style={{width:43,height:43}} />
-								</TouchableOpacity>
-							</View>
-						)
-					:	(<View/>)				
-					}
+							
+					<TouchableOpacity onPress={() => {setMv(true);props.setFnc('none')}}>
+						<MaterialCommunityIcons name='plus-circle' size={55} color='blue' />	
+					</TouchableOpacity>
+					<TouchableOpacity onPress={() => props.setFnc(props.view == 'flex' ? 'none' : 'flex')}> 
+						<MaterialCommunityIcons name='delete-circle' size={55} color='blue' />
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.handMBtn} onPress={()=>{setModalBns(true)}}> 
+						<Image source={require('../../assets/DiemB.png')} style={{width:43,height:43}} />
+					</TouchableOpacity>
 					<TouchableOpacity style={styles.handMBtn} onPress={()=>{setModalSDB(true)}}>
 						<Image source={require('../../assets/DiemSDB.png')} style={{width:43,height:43}} />
 					</TouchableOpacity> 

@@ -463,7 +463,7 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 
  	async function CalculateSomeData() {
  		SnackPopUp('Hãy chờ một chút trong khi hệ thống chuẩn bị dữ liệu')
- 		let temp = [], result = [];
+ 		let specialTemp = [], temp10 = [], temp11 = [], temp12 = [], result = [];
 
  		if (data2 != null && data3 != null) {
 	 		const groupedByGrade = data2.reduce((groups, item) => {
@@ -488,86 +488,120 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		    for (const classObj of classes) {
 		      rank++;
 
-		      temp.push({
-		        class: classObj.class_id,
-		        score: classObj.score,
-		        rank: rank
-		      });
+		      if(gradeTmp == "10"){
+		 	      temp10.push({
+			        class: classObj.class_id,
+			        score: classObj.score,
+			        rank: rank
+			      });
+		      } else if (gradeTmp == "11"){
+		      	temp11.push({
+			        class: classObj.class_id,
+			        score: classObj.score,
+			        rank: rank
+			      });
+		      } else {
+		      	temp12.push({
+			        class: classObj.class_id,
+			        score: classObj.score,
+			        rank: rank
+			      });
+		      }
 
 		      prevScore = classObj.score;
 		    }
 			  
 			}
 
-			if (login.includes('sdl')) {
-				temp = [ temp.find((item) => login.includes((item.class.slice(3)))) ]
+			function findClass(){
+				let response = [];
+				if (login.includes('sdl')) {
+					response = [ temp10.find((item) => login.includes((item.class.slice(3, 7)))) ]
+					if(response[0] != undefined){ return response }
+						
+					response = [ temp11.find((item) => login.includes((item.class.slice(3, 7)))) ]
+					if(response[0] != undefined){ return response }
+					
+					response = [ temp12.find((item) => login.includes((item.class.slice(3, 7)))) ]
+					if(response[0] != undefined){ return response }
+				}		
+				return response		
 			}
 
-			let s;
+			function workingWithTemp(temp){
+				let s;
 
-	 		result = temp.map(item => { //Lặp qua từng lớp
-	 			let tmpVpmRule = data3.filter((item2)=>item2.class_id == item.class) //Lọc ra vi phạm từng lớp và xử lí
-	 			item.PlusĐT = 0 
-	 			item.MinusĐT = 0 
-	 			item.MinusPnt = 0 
-	 			item.SoTiet = 0 
-	 			item.SĐB = 0
-	 			item.supernote = {};
-	 			
-	 			tmpVpmRule.map(obj => {
-	 				if (obj.bonus == null) {
-	 					item.MinusPnt = item.MinusPnt + obj.name_vp_id.minus_pnt * obj.quantity
-	 					
-	 					if (item.supernote[obj.name_vp_id.name_vp]) {
-	 						item.supernote[obj.name_vp_id.name_vp].num += obj.quantity
-	 						item.supernote[obj.name_vp_id.name_vp].lst += `, ${obj.name_student}` 
-	 					} else {
-	 						item.supernote[obj.name_vp_id.name_vp] = {}
-	 						item.supernote[obj.name_vp_id.name_vp].num = obj.quantity
-	 						item.supernote[obj.name_vp_id.name_vp].lst = obj.name_student
-	 					}
+		 		result = temp.map(item => { //Lặp qua từng lớp
+		 			let tmpVpmRule = data3.filter((item2)=>item2.class_id == item.class) //Lọc ra vi phạm từng lớp và xử lí
+		 			item.PlusĐT = 0 
+		 			item.MinusĐT = 0 
+		 			item.MinusPnt = 0 
+		 			item.SoTiet = 0 
+		 			item.SĐB = 0
+		 			item.supernote = {};
+		 			
+		 			tmpVpmRule.map(obj => {
+		 				if (obj.bonus == null) {
+		 					item.MinusPnt = item.MinusPnt + obj.name_vp_id.minus_pnt * obj.quantity
+		 					
+		 					if (item.supernote[obj.name_vp_id.name_vp]) {
+		 						item.supernote[obj.name_vp_id.name_vp].num += obj.quantity
+		 						item.supernote[obj.name_vp_id.name_vp].lst += `, ${obj.name_student}` 
+		 					} else {
+		 						item.supernote[obj.name_vp_id.name_vp] = {}
+		 						item.supernote[obj.name_vp_id.name_vp].num = obj.quantity
+		 						item.supernote[obj.name_vp_id.name_vp].lst = obj.name_student
+		 					}
 
-	 				} else {
-	 					// xử lí sđb và bonus
-	 					if (obj.bonus == 'Điểm sổ đầu bài') {
-	 						item.SoTiet = obj.quantity;
-	 						item.SĐB = obj.name_student.reduce((sum, object) => {
-	  						return sum + Number(object.Tiet1) + Number(object.Tiet2) + Number(object.Tiet3) + Number(object.Tiet4) + Number(object.Tiet5)
-	  					},0);
+		 				} else {
+		 					// xử lí sđb và bonus
+		 					if (obj.bonus == 'Điểm sổ đầu bài') {
+		 						item.SoTiet = obj.quantity;
+		 						item.SĐB = obj.name_student.reduce((sum, object) => {
+		  						return sum + Number(object.Tiet1) + Number(object.Tiet2) + Number(object.Tiet3) + Number(object.Tiet4) + Number(object.Tiet5)
+		  					},0);
 
-	 					} else {
-	 						item.supernote[obj.bonus]	= 0		
-	 						if (obj.quantity < 0 ) {
-	 							item.MinusĐT += obj.quantity
-	 						} else {
-	 							item.PlusĐT += obj.quantity
-	 						}
-	 					}
-	 				}
+		 					} else {
+		 						item.supernote[obj.bonus]	= 0		
+		 						if (obj.quantity < 0 ) {
+		 							item.MinusĐT += obj.quantity
+		 						} else {
+		 							item.PlusĐT += obj.quantity
+		 						}
+		 					}
+		 				}
 
-	 			})
+		 			})
 
-	 			item.note = '';
-	 			if (item.supernote) {
-		 			s = Object.entries(item.supernote) 
-		 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } ${ (itm[1].lst ? '('+itm[1].lst+')' : '') }\n`) 
-		 		}
-		 		
-	 			return ([
-	 				FontStyle(item.class.slice(3)),
-	 				FontStyle(item.SĐB),
-	 				FontStyle(item.SoTiet),
-	 				FontStyle(item.MinusPnt + item.MinusĐT),
-	 				FontStyle(item.PlusĐT),
-	 				FontStyle(item.score),
-	 				FontStyle(item.rank),
-	 				FontStyleNote(item.note.slice(0, item.note.length-1)), 
-	 				(item.supernote ? s.length : 1)
-	 			])		
-	 		})
-	 	}
+		 			item.note = '';
+		 			if (item.supernote) {
+			 			s = Object.entries(item.supernote) 
+			 			s.map((itm,idx)=>item.note += `${idx+1}. ${itm[0]}: ${ (itm[1].num ? itm[1].num : '') } ${ (itm[1].lst ? '('+itm[1].lst+')' : '') }\n`) 
+			 		}
+			 		
+		 			return ([
+		 				FontStyle(item.class.slice(3)),
+		 				FontStyle(item.SĐB),
+		 				FontStyle(item.SoTiet),
+		 				FontStyle(item.MinusPnt + item.MinusĐT),
+		 				FontStyle(item.PlusĐT),
+		 				FontStyle(item.score),
+		 				FontStyle(item.rank),
+		 				FontStyleNote(item.note.slice(0, item.note.length-1)), 
+		 				(item.supernote ? s.length : 1)
+		 			])		
+		 		})
+		 	
+		 		return result	
+		 	}
 
- 		return result
+			specialTemp = findClass()
+		 	if(specialTemp.length != 0){
+		 		return [workingWithTemp(specialTemp)];
+		 	} else {
+		 		return [workingWithTemp(temp10), workingWithTemp(temp11), workingWithTemp(temp12)];
+		 	}
+		}
  	}	
 
   useEffect(() => {
@@ -643,14 +677,13 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	}
 
 	// xuất xlsx
-	async function writeWorkbook(wb) {
-		let data = await CalculateSomeData()
-		
+	async function writeWorkbookOne(specialClassData) {
 	  /* generate worksheet and workbook */
 		let MainRow = [
 			{ v: 'KẾT QUẢ THI ĐUA TUẦN ' + week.slice(2), t: "s", 
 				s: { 
-					font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "FF0000" } },
+
+					font: { name: "Times New Roman", sz: 20, bold: true, color: { rgb: "FF0000" } },
 					alignment: { wrapText: true, vertical: 'center', horizontal: 'center'} 
 				} 
 			},
@@ -665,7 +698,95 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	  const worksheet = XLSX.utils.aoa_to_sheet([[MainRow[0]],[MainRow[1]]])
 	  const workbook = XLSX.utils.book_new();
 
-	  const header = ["KHỐI", "LỚP", `ĐIỂM\nSĐB`, 'SỐ TIẾT', `ĐIỂM\nTRỪ`, 'ĐIỂM\nCỘNG' ,"TỔNG ĐIỂM", "XẾP HẠNG", "GHI CHÚ"]
+	  const header = ["LỚP", `ĐIỂM\nSĐB`, 'SỐ TIẾT', `ĐIỂM\nTRỪ`, 'ĐIỂM\nCỘNG' ,"TỔNG ĐIỂM", "XẾP HẠNG", "GHI CHÚ"]
+		const headerRow1 = header.map(headers => ({
+		  t: 's',
+		  v: headers,
+		  s: {
+		    font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "FF0000" } },
+		    alignment: { wrapText: true, vertical: 'center', horizontal: 'center' },
+		    fill: { fgColor: { rgb: "ffff00" } },
+		    border: { 
+		    	top: { style: 'thin', color: 'black'},
+		    	bottom: { style: 'thin', color: 'black'},
+		    	left: { style: 'thin', color: 'black'},
+		    	right: { style: 'thin', color: 'black'}
+		    }
+		 	}
+		}));
+
+		XLSX.utils.sheet_add_aoa(worksheet, [headerRow1], { origin: "A3" });
+	  XLSX.utils.sheet_add_aoa(worksheet, specialClassData, { origin: "A4" });
+
+	  worksheet["!cols"] = []
+
+	  header.forEach((obj, idx)=>{
+	  	worksheet["!cols"].push({ wch: header[idx].length*1.8 });
+	  })
+
+	  worksheet["!cols"][0].wch = header[0].length*3
+		worksheet["!cols"][7].wpx = 750
+	  
+	  worksheet["!rows"] = [];
+	  worksheet["!rows"][0] = {hpx: 30};
+		worksheet["!rows"][2] = {hpx: 40};
+
+	  let merge = [
+			{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
+			{ s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
+		];
+		
+		worksheet["!rows"][3] = {hpx: 20 * specialClassData[0][8]}
+		worksheet["!merges"] = merge;
+
+		XLSX.utils.book_append_sheet(workbook, worksheet, weekin4.week_name);
+		
+		const wbout = XLSX.write(workbook, {type:'base64', bookType:"xlsx"});
+	  const file = documentDirectory + "Kết quả thi đua "+weekin4.week_name+" Lớp "+login.slice(3,7)+".xlsx";
+
+	  try {
+		  await writeAsStringAsync(file, wbout, {
+		    encoding: "base64",
+		  });
+		  
+		  await saveXLSXFile(file);
+		} catch (e) {
+		  
+		}
+
+	  return file;		
+	}
+
+	async function writeWorkbook(wb) {
+		let data = await CalculateSomeData();
+		if(login.includes('sdl')){
+			return writeWorkbookOne([...data[0]])
+		}
+
+		const data10 = data[0], data11 = data[1], data12 = data[2];
+		data = [...data10, ...data11, ...data12];
+		
+	  /* generate worksheet and workbook */
+		let MainRow = [
+			{ v: 'KẾT QUẢ THI ĐUA TUẦN ' + week.slice(2), t: "s", 
+				s: { 
+
+					font: { name: "Times New Roman", sz: 20, bold: true, color: { rgb: "FF0000" } },
+					alignment: { wrapText: true, vertical: 'center', horizontal: 'center'} 
+				} 
+			},
+			{ v: 'Tuần: '+week.slice(2)+' (từ '+FormatDate(minus1days(weekin4.start_date))+' đến '+FormatDate(minus1days(weekin4.end_date))+')', t: "s", 
+				s: { 
+					font: { name: "Times New Roman", sz: 13, bold: true, color: { rgb: "0070c0" } },
+					alignment: { wrapText: true, vertical: 'center', horizontal: 'center'} 
+				}
+			}
+		];	
+
+	  const worksheet = XLSX.utils.aoa_to_sheet([[MainRow[0]],[MainRow[1]]])
+	  const workbook = XLSX.utils.book_new();
+
+	  const header = ["LỚP", `ĐIỂM\nSĐB`, 'SỐ TIẾT', `ĐIỂM\nTRỪ`, 'ĐIỂM\nCỘNG' ,"TỔNG ĐIỂM", "XẾP HẠNG", "GHI CHÚ"]
 		const headerRow1 = header.map(headers => ({
 		  t: 's',
 		  v: headers,
@@ -706,9 +827,13 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	  })
 
 		XLSX.utils.sheet_add_aoa(worksheet, [headerRow1], { origin: "A3" });
-		XLSX.utils.sheet_add_aoa(worksheet, gradeLst, { origin: "A4" });
-	  /* calculate column width */
-	  XLSX.utils.sheet_add_aoa(worksheet, data, { origin: "B4" });
+	  XLSX.utils.sheet_add_aoa(worksheet, data10, { origin: "A4" });
+
+	  XLSX.utils.sheet_add_aoa(worksheet, [headerRow1], { origin: "A"+(3+k10+1) });
+	  XLSX.utils.sheet_add_aoa(worksheet, data11, { origin: "A"+(4+k10+1) });
+
+	  XLSX.utils.sheet_add_aoa(worksheet, [headerRow1], { origin: "A"+(3+k10+1+k11+1) });
+	  XLSX.utils.sheet_add_aoa(worksheet, data12, { origin: "A"+(4+k10+1+k11+1) });
 
 	  worksheet["!cols"] = []
 
@@ -717,36 +842,35 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 	  })
 
 	  worksheet["!cols"][0].wch = header[0].length*3
-	  worksheet["!cols"][1].wch = header[1].length*3
-
-		worksheet["!cols"][8].wpx = 760
+		worksheet["!cols"][7].wpx = 750
 	  
 	  worksheet["!rows"] = [];
-
+	  worksheet["!rows"][0] = {hpx: 30};
 		worksheet["!rows"][2] = {hpx: 40};
 
 	  let merge = [
-			{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+			{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
 			{ s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
 		];
-
-		if (k10 > 0) {merge.push({ s: { r: 3, c: 0 }, e: { r: 3 + k10 - 1, c: 0 } })}
-		if (k11 > 0) {merge.push({ s: { r: 3 + k10, c: 0 }, e: { r: 3 + k11 + k10 - 1, c: 0 } })}
-    if (k12 > 0) {merge.push({ s: { r: 3 + k11 + k10, c: 0 }, e: { r: 3 + k11 + k10 + k12 - 1, c: 0 } })}
 		
-    if (login == 'admin') {
-    	for (let i = 3; i <= 3 + k11 + k10 + k12 - 1; i++) {
-	    	worksheet["!rows"][i] = {hpx: 20 * data[i-3][8]}
+    if (login.includes('admin')) {
+    	let i = 3;
+    	for (let j = 3; j <= 3 + k11 + k10 + k12 - 1 + 2; j++) {
+    		if(j == (3 + k10) || j == (3 + k10 + k11 + 1)){
+    			worksheet["!rows"][j] = {hpx: 40};
+    			
+    		} else {
+		    	worksheet["!rows"][j] = {hpx: 20 * data[i-3][8]}
+		    	i++;
+    		}
 	    }	
     } else {
     	worksheet["!rows"][3] = {hpx: 20 * data[0][8]}
     }
 
-    
-
 		worksheet["!merges"] = merge;
 
-		XLSX.utils.book_append_sheet(workbook, worksheet, "Kết quả");
+		XLSX.utils.book_append_sheet(workbook, worksheet, weekin4.week_name);
 
 	  /* create an XLSX file and try to save to Presidents.xlsx */
 	  // XLSX.writeFile(workbook, "Presidents.xlsx", { compression: true });

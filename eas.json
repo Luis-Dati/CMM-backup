@@ -21,7 +21,7 @@
       "env": {
         "EXPO_PUBLIC_DATA_URL" : "https://saodo.eti.vn/",
         "EXPO_PUBLIC_API_KEY" : "f994a7d6-a4c5-46bd-85c4-964f11d877a5",
-      }
+      },
       channel: "production"
     },
 
