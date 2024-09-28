@@ -113,7 +113,7 @@ const UserScreen = ({ navigation }) => {
 const Empty = () => {
 	return (
 		<View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-			<Text>Phiên bản: 2.0.3</Text>
+			<Text>Phiên bản: 2.0.6</Text>
 			<Text>Bản quyền thuộc sở hữu của Lê Duy Đạt (313615)</Text>
 		</View>
 	)

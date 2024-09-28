@@ -18,6 +18,10 @@ function DecryptPass (code, key) {
 	return bytes.toString(CryptoES.enc.Utf8);
 }
 
+function EncryptPass (pass, key) {
+	return CryptoES.AES.encrypt(pass, key).toString();	
+}
+
 const Loading = ({navigation}) => {
 	const [isFocused, setIsFocused] = useState(false);
 	const [isFocused2, setIsFocused2] = useState(false);
@@ -59,9 +63,13 @@ const Loading = ({navigation}) => {
 
 	};
 
+	const CreateData = async () => {
+   	await getItems();
+   	await fetchData();
+  }
+
 	useEffect(() => {
-		getItems()
-		fetchData()
+		CreateData()
 	},[])
 
 	const storeData = async (value) => {
@@ -151,44 +159,58 @@ const Loading = ({navigation}) => {
 
 		if (school.item != 'THPT Dầu Tiếng') {
 			Alert.alert('Thông báo','Trường chưa đăng kí dữ liệu')
-		} else {
-			if (role == '') {
-				Alert.alert('Thông báo','Bạn chưa chọn vai trò đăng nhập')
+			return
+		} 
+
+		if (role == '') {
+			Alert.alert('Thông báo','Bạn chưa chọn vai trò đăng nhập')
+			return
+		}
+
+		if (role == 'Người dùng khác') {
+			navigation.replace('TotalScreen', {
+				screen:'HomeScreen',
+				params:{item: school.item}
+			})
+			return
+		}
+
+		if (role != 'Người dùng khác') {
+			Keyboard.dismiss();	
+			let user;
+			if (name == '') {
+				Alert.alert('Thông báo','Bạn chưa nhập đầy đủ thông tin')
 				return
 			}
+			
+			await fetch(DATA_URL+EncryptPass(name, 'test')+'/'+EncryptPass(pass, 'test'), {
+				method: 'GET',
+				headers: {
+					'api-key': API_KEY,
+				}
+			});
 
-			if (role == 'Người dùng khác') {
+			user = data.find((item)=>(item.user_role == name && item.password == pass)) 
+			
+			if (user) {
+				await storeData(user)	
+				await fetch(DATA_URL+'SuccessfulLogin', {
+					method: 'GET',
+					headers: {
+						'api-key': API_KEY,
+					}
+				});
+				Alert.alert('Thông báo','Đăng nhập thành công')
 				navigation.replace('TotalScreen', {
 					screen:'HomeScreen',
 					params:{item: school.item}
 				})
-				return
+			} else {
+				Alert.alert('Thông báo','Đăng nhập thất bại')
 			}
 
-			if (role != 'Người dùng khác') {
-				Keyboard.dismiss();	
-				let user;
-				if (name == '') {
-					Alert.alert('Thông báo','Bạn chưa nhập đầy đủ thông tin')
-					return
-				}
-				
-				user = data.find((item)=>(item.user_role == name && item.password == pass)) 
-				
-				if (user) {
-					await storeData(user)	
-					
-					Alert.alert('Thông báo','Đăng nhập thành công')
-					navigation.replace('TotalScreen', {
-						screen:'HomeScreen',
-						params:{item: school.item}
-					})
-				} else {
-					Alert.alert('Thông báo','Đăng nhập thất bại')
-				}
-
-			}
-		}		
+		}
+			
 	}
 
 	function closeMenu (item) {
@@ -257,37 +279,6 @@ const Loading = ({navigation}) => {
 				</View>
 				</KeyboardAvoidingView>
 
-				
-				{/*<View style={[styles.boxQs,(role == 'Người dùng khác' || userIn4) && {backgroundColor:'#AAAAAA',opacity:0.5}]}>
-					<MaterialCommunityIcons name="account" size={25} color='white'/>
-					<TextInput
-						onChangeText={value => setName(value.replace(/\s+|,|-|[.]/g,''))}
-						value={name}
-						style={styles.textForm}
-						placeholderTextColor='white'
-						selectionColor={'white'}
-						onFocus={() => setIsFocused(true)}
-						onBlur={() => setIsFocused(false)}
-						placeholder={isFocused ? '' : 'Tên tài khoản'}
-						editable={role == 'Người dùng khác' || userIn4 ? false : true}
-					/>
-				</View>
-					
-				<View style={[styles.boxQs,role == 'Người dùng khác' && {backgroundColor:'#AAAAAA',opacity:0.5}]}>
-					<MaterialCommunityIcons name="lock" size={25} color='white'/>
-					<TextInput
-						onChangeText={setPass}
-						value={pass}
-						style={styles.textForm}
-						placeholderTextColor='white'
-						secureTextEntry={true}
-						onFocus={() => setIsFocused2(true)}
-						onBlur={() => setIsFocused2(false)}
-						selectionColor={'white'}
-						placeholder={isFocused2 ? '' : 'Mật khẩu'}
-						editable={role == 'Người dùng khác' ? false : true}
-					/>
-				</View>*/}
 				<View style={{width:'80%',maxWidth:200}}>
 					<TextInput
 						mode='outlined'
@@ -323,17 +314,11 @@ const Loading = ({navigation}) => {
 				<Pressable
 					onPress={LoginCheck}
 					style={({ pressed }) => [
-					{
-							backgroundColor: pressed
-								? '#5A7EE6'
-								: 'white'
-						},
+						{backgroundColor: pressed ? '#5A7EE6' : 'white'},
 						styles.loginBtn
 					]}>
 					{({pressed}) => (
-							pressed
-							? <Text style={{color:'white',fontWeight:'bold',fontSize:16}}>Đăng nhập</Text>
-						: <Text style={{color:'#555',fontWeight:'bold',fontSize:16}}>Đăng nhập</Text>
+						<Text style={{color:(pressed ? 'white' : '#555'),fontWeight:'bold',fontSize:16}}>Đăng nhập</Text>
 					)}
 				</Pressable>
 
