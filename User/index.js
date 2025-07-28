@@ -4,8 +4,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { SectionGrid, SimpleGrid } from 'react-native-super-grid';
 import NumericInput from 'react-native-numeric-input';
 import { Button, Surface, DataTable, List, useTheme, Avatar, Card, SegmentedButtons, RadioButton, Divider, Menu, PaperProvider } from 'react-native-paper';
-import { LineChart } from 'react-native-gifted-charts';
-import { ruleTypes } from 'gifted-charts-core';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import { ConvertTime } from '../toolkit.js';
@@ -397,39 +395,28 @@ const User = ({route, navigation}) => {
 							)
 						}
 
+						<View style={{height:15}} />
+
+						{login == 'admin'
+						&& (
+							<View style={{flexDirection:'row'}}>
+								<TouchableOpacity style={{alignItems:'center',flex:1}}
+									onPress={()=>onPress('Thống kê dữ liệu')}
+								>
+									<Surface style={{borderRadius:25}} elevation={4}>
+										<Avatar.Icon theme={ {colors: {primary: "#fff"}}} color={theme.colors.lighterOwnColor} size={50} icon="file-chart" />
+									</Surface>
+									<Text style={{textAlign:'center',marginTop:3}}>{`Thống kê\ndữ liệu`}</Text>	
+								</TouchableOpacity>
+
+							</View>
+							)
+						}
+
 					</Card.Content>
 				</Card>
 
 				<View style={{height:15}} />
-
-				{/*<Card>
-					<Card.Title 
-						title='Số liệu thống kê hiện tại' titleVariant='titleLarge'
-						left={(props) => <Avatar.Icon theme={ {colors: {primary: "#fff"}}} {...props} color={'#1FBFF4'} icon='google-analytics' />}
-					/>
-					<Divider />
-					<Card.Content onLayout={(event) => setStaticWidth(event.nativeEvent.layout.width)}>
-
-						<LineChart
-							isAnimated
-							initialSpacing={0}
-							data={lineData}
-							rulesColor="gray"
-							rulesType="solid"             
-							textColor1="yellow"
-							textShiftY={-8}
-							textShiftX={-10}
-							textFontSize={13}
-							thickness={5}
-							noOfSections={5}
-							yAxisColor="#0BA5A4"
-							spacing={60}
-							xAxisColor="#0BA5A4"
-							color="#0BA5A4"
-							showVerticalLines
-						/>
-					</Card.Content>
-				</Card>*/}
 
 				<Model />
 				<ModelWeek />

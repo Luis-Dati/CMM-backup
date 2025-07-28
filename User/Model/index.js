@@ -9,6 +9,7 @@ import { Xbxh } from './Xbxh';
 import Gutd from './Gutd';
 import { Sxlt } from './Sxlt';
 import { Qllt } from './Qllt';
+import { Tkdl } from './Tkdl';
 
 const Model = ({route, navigation}) => {
 	const { type } = route.params;
@@ -37,6 +38,9 @@ const Model = ({route, navigation}) => {
 
 		case 'Quản lí lịch tuần':
 			return ( <Qllt level={level}/> )
+
+		case 'Thống kê dữ liệu':
+			return ( <Tkdl level={level}/> )  
 		}
 	}
 	return (
