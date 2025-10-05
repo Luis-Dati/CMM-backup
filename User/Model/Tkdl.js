@@ -132,6 +132,10 @@ const Tkdl = () => {
 		  }
 		});
 		
+		for (const class_id in classMap) {
+		  classMap[class_id].totalScore = Number(classMap[class_id].totalScore.toFixed(2))
+		}
+
 		// chuyển classMap từ object sang array
 		classArray = Object.values(classMap)
 
@@ -238,7 +242,7 @@ const Tkdl = () => {
 	  worksheet["!cols"] = []
 
 	  header.forEach((obj, idx)=>{
-	  	worksheet["!cols"].push({ wch: 5 });
+	  	worksheet["!cols"].push({ wch: 8 });
 	  })
 
 	  worksheet["!cols"][0].wch = 8

@@ -67,12 +67,7 @@ const theme = {
 }
 
 export default function App() {
-	const colorScheme = useColorScheme();
-
-	const paperTheme =
-	colorScheme === 'light'
-		? { ...theme }
-		: { ...theme };
+	const paperTheme = theme;
 
 	return (
 	<PaperProvider theme={paperTheme}>

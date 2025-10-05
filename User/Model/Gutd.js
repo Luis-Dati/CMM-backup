@@ -175,7 +175,7 @@ const Gutd = () => {
 										setNvp(item.name_vp);setNscore(item.minus_pnt)
 									}}>
 					          <DataTable.Cell>{index+1 + page*itemsPerPage}</DataTable.Cell>
-					          <View style={{alignSelf:'center'}}>
+					          <View style={{alignSelf:'center',width:"70%"}}>
 					          	<Text numberOfLines={1}>{item.name_vp}</Text>
 					          </View>
 					          <DataTable.Cell numeric>{item.minus_pnt}</DataTable.Cell>

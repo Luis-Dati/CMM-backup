@@ -253,7 +253,7 @@ const Qllt = () => {
 								{showEnd && (
 									<DateTimePicker
 										testID="dateTimePicker"
-										value={newDateEnd}
+										value={dateEnd}
 										mode='date'
 										onChange={onChangeEnd}
 									/>

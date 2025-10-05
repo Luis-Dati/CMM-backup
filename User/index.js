@@ -166,38 +166,6 @@ const User = ({route, navigation}) => {
 					</Card>
 				</View>
 
-				{/*<View style={styles.entireView2}>
-					<View style={styles.dialog2}>
-						<TouchableOpacity 
-							onPress={()=>setMwk(false)} 
-							style={{alignSelf:'flex-end',margin:0}}
-						>
-							<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
-						</TouchableOpacity>
-						<ScrollView showsVerticalScrollIndicator={false}>
-							<Text style={styles.header}>Hãy chọn một tuần</Text>
-							{weekList
-							?	(
-									<SimpleGrid
-										data={weekList}
-										itemDimension={50}
-										spacing={10}
-										renderItem={({item, index}) => 
-											<Button color='blue' title={item.week_name} onPress={()=>{
-													setMwk(false);
-													navigation.navigate('Model',{login:login,loginIn4:loginIn4,type:typefnc,week:item.week_id,weekin4:item})
-												}}
-											/>
-										}
-									/>
-								)
-							:	(
-									<ActivityIndicator size="large" />
-								)	
-							}
-						</ScrollView>             
-				 </View>
-				</View>*/}
 			</Modal>
 		)
 	}
@@ -239,15 +207,29 @@ const User = ({route, navigation}) => {
 							<MaterialCommunityIcons name='close-circle' size={25} color='gray' />
 						</TouchableOpacity>
 						<ScrollView showsVerticalScrollIndicator={false}>
-							<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
-								<Text style={{fontSize:18,fontWeight:'bold'}}>Tuần:</Text>
+							<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+								<Text style={{fontSize:18,fontWeight:'bold'}}>Chọn tuần:</Text>
 								<View style={{width:10}} />
-								<NumericInput 
-									value={week}
-									onChange={value => setWeek(value)} 
-									rounded
-									minValue={1}
-								/>
+								{weekList 
+								? (
+									<Dropdown
+										autoScroll={false}
+										style={[styles.dropdown]}
+										iconStyle={{height:30,width:30}}
+										iconColor='black'
+										activeColor='lightblue'
+										data={weekList}
+										maxHeight={250}
+										labelField="week_name"
+										valueField="week_id"
+										placeholder={"..."}
+										value={selectedWeek}
+										onChange={item => setSelectedWeek(item)}
+										itemContainerStyle={{borderWidth:0.5}}
+									/>	
+								)
+								: (<View><Text>Đang chờ...</Text></View>)
+								}	
 							</View>
 							{lst
 							?	(
@@ -266,7 +248,7 @@ const User = ({route, navigation}) => {
 												}
 												
 												setMv(false);
-												navigation.navigate('Model',{login:login,type:typefnc,classe:item,week:'wk'+('00'+week).slice(-2)})
+												navigation.navigate('Model',{login:login,type:typefnc,classe:item,week:selectedWeek.week_id})
 											}}
 											>Lớp {item}</Button>
 										)}

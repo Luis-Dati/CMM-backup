@@ -247,69 +247,70 @@ const Xbxh = ({ week, weekin4, login, loginIn4 }) => {
 		return new Date(new Date(item).getTime() - 24 * 60 * 60 * 1000).toDateString();
 	}
 
+	async function TinhDiem2(data) {
+		let KList;
+		switch (loginIn4.role) {
+		case 'admin10':
+			KList = scoreList.filter(item=>item.class_id.includes('10'));
+			break;
+		case 'admin11':
+			KList = scoreList.filter(item=>item.class_id.includes('11'))
+			break;
+		case 'admin12':
+			KList = scoreList.filter(item=>item.class_id.includes('12'))
+			break;
+		default:
+			KList = scoreList
+		}
+		
+	  if (KList != null && data != null) {
+	    try {
+	      for (const objScore of KList) {
+	        let iniMinus = 0, cnt = 0, result = 0;
+
+	        for (const obj of data) {
+	          if (obj.class_id == objScore.class_id) {
+	            if (obj.bonus == null) {
+	              iniMinus = iniMinus + obj.name_vp_id.minus_pnt * obj.quantity;
+	            } else {
+	              if (obj.bonus == 'Điểm sổ đầu bài') {
+	              	cnt = obj.quantity
+	                result = obj.name_student.reduce((sum, object) => {
+	                  return sum + Number(object.Tiet1) + Number(object.Tiet2) + Number(object.Tiet3) + Number(object.Tiet4) + Number(object.Tiet5)
+	                }, 0);
+
+	              } else {
+	                iniMinus = iniMinus + obj.quantity;
+	              }
+	            }
+	          }
+	        }
+
+	        await SendScore({ week_id: objScore.week_id, class_id: objScore.class_id, score: (iniMinus*0.2 + (result/(cnt ? cnt : 0))*10*0.8)});
+	      }
+	    } catch (error) {
+	      
+	    }
+	  }
+	}
+
+	async function SendScore(param) {
+	
+		const response = await fetch(DATA_URL+'score', {
+	    method: 'PUT',
+	    headers: {
+	      'Content-Type': 'application/json',
+	      'api-key': API_KEY,
+	    },
+	    body: JSON.stringify(param),
+	  });
+	}
+
 	async function CalculatePoint() {
 		await TinhDiem2(data3)
 		SnackPopUp('Đã tính điểm xong')
 		setSignal('Complete! '+new Date().toString())
 		await CalculateData2()
-
-		async function TinhDiem2(data) {
-			let KList;
-			switch (loginIn4.role) {
-			case 'admin10':
-				KList = scoreList.filter(item=>item.class_id.includes('10'));
-				break;
-			case 'admin11':
-				KList = scoreList.filter(item=>item.class_id.includes('11'))
-				break;
-			case 'admin12':
-				KList = scoreList.filter(item=>item.class_id.includes('12'))
-				break;
-			default:
-				KList = scoreList
-			}
-			
-		  if (KList != null && data != null) {
-		    try {
-		      for (const objScore of KList) {
-		        let iniMinus = 0, cnt = 0, result = 0;
-
-		        for (const obj of data) {
-		          if (obj.class_id == objScore.class_id) {
-		            if (obj.bonus == null) {
-		              iniMinus = iniMinus + obj.name_vp_id.minus_pnt * obj.quantity;
-		            } else {
-		              if (obj.bonus == 'Điểm sổ đầu bài') {
-		              	cnt = obj.quantity
-		                result = obj.name_student.reduce((sum, object) => {
-		                  return sum + Number(object.Tiet1) + Number(object.Tiet2) + Number(object.Tiet3) + Number(object.Tiet4) + Number(object.Tiet5)
-		                }, 0);
-
-		              } else {
-		                iniMinus = iniMinus + obj.quantity;
-		              }
-		            }
-		          }
-		        }
-
-		        await SendScore({ week_id: objScore.week_id, class_id: objScore.class_id, score: (iniMinus*0.2 + (result/cnt)*10*0.8)});
-		      }
-		    } catch (error) {
-		      
-		    }
-		  }
-		}
-
-		async function SendScore(param) {
-			const response = await fetch(DATA_URL+'score', {
-		    method: 'PUT',
-		    headers: {
-		      'Content-Type': 'application/json',
-		      'api-key': API_KEY,
-		    },
-		    body: JSON.stringify(param),
-		  });
-		}
 
 	}
 
